@@ -49,39 +49,44 @@ def format_bounding_box(bounding_box: list) -> str:
     except:
         return "Invalid bounding box format"
 
-def is_point_in_polygon(point: tuple, polygon: list) -> bool:
-    """Check if a point lies within or near a polygon using bounding box approximation."""
-    if not polygon:
-        return False
-    poly_array = np.array(polygon).reshape(-1, 2)
-    x, y = point
-    x_min, x_max = poly_array[:, 0].min(), poly_array[:, 0].max()
-    y_min, y_max = poly_array[:, 1].min(), poly_array[:, 1].max()
-    return x_min <= x <= x_max and y_min <= y <= y_max
-
 def calculate_line_confidence(line, words) -> float:
-    """Calculate line confidence by averaging confidence of words within the line's bounding box."""
-    if not line.polygon or not words:
+    """Calculate line confidence by averaging confidence of words in the line."""
+    if not line.spans or not words:
         return 0.0
     
-    line_words = []
-    for word in words:
-        if not word.polygon:
-            continue
-        # Check if any point of the word's polygon is within the line's polygon
-        word_polygon = np.array(word.polygon).reshape(-1, 2)
-        for point in word_polygon:
-            if is_point_in_polygon(point, line.polygon):
-                line_words.append(word)
-                break
+    line_span = line.spans[0]  # Assume single span per line
+    line_words = [
+        word for word in words
+        if hasattr(word, 'span') and word.span.offset >= line_span.offset
+        and word.span.offset < line_span.offset + line_span.length
+    ]
     
     confidences = [word.confidence for word in line_words if hasattr(word, 'confidence') and word.confidence is not None]
     return sum(confidences) / len(confidences) if confidences else 0.0
 
+def is_word_handwritten(word, styles) -> bool:
+    """Determine if a word is handwritten based on style spans."""
+    if not hasattr(word, 'span') or not styles:
+        return False
+    
+    word_offset = word.span.offset
+    word_end = word_offset + word.span.length
+    
+    for style in styles:
+        if not style.is_handwritten:
+            continue
+        for span in style.spans:
+            span_start = span.offset
+            span_end = span_start + span.length
+            # Check if word's span overlaps with handwritten style span
+            if word_offset < span_end and word_end > span_start:
+                return True
+    return False
+
 async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
     """
     Process uploaded document using Azure Document Intelligence.
-    Returns processed data with line confidence calculated from words.
+    Returns processed data with line confidence and handwritten flag for words.
     """
     try:
         logger.info(f"Processing document {document_id} from {file_path}")
@@ -116,7 +121,11 @@ async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
             "styles": [
                 {
                     "is_handwritten": style.is_handwritten,
-                    "index": idx
+                    "index": idx,
+                    "spans": [
+                        {"offset": span.offset, "length": span.length}
+                        for span in style.spans
+                    ]
                 } for idx, style in enumerate(result.styles)
             ] if result.styles else [],
             "pages": [
@@ -136,7 +145,8 @@ async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
                         {
                             "text": word.content,
                             "confidence": word.confidence,
-                            "bounding_box": format_bounding_box(word.polygon)
+                            "bounding_box": format_bounding_box(word.polygon),
+                            "is_handwritten": is_word_handwritten(word, result.styles)
                         } for word in page.words
                     ] if page.words else []
                 } for page in result.pages

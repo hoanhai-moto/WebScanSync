@@ -83,10 +83,25 @@ def is_word_handwritten(word, styles) -> bool:
                 return True
     return False
 
+def is_line_handwritten(line, words, styles) -> bool:
+    """Determine if a line is handwritten based on whether any of its words are handwritten."""
+    if not line.spans or not words:
+        return False
+    
+    line_span = line.spans[0]  # Assume single span per line
+    line_words = [
+        word for word in words
+        if hasattr(word, 'span') and word.span.offset >= line_span.offset
+        and word.span.offset < line_span.offset + line_span.length
+    ]
+    
+    # Check if any word in the line is handwritten
+    return any(is_word_handwritten(word, styles) for word in line_words)
+
 async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
     """
     Process uploaded document using Azure Document Intelligence.
-    Returns processed data with line confidence and handwritten flag for words.
+    Returns processed data with line and word handwritten flags and line confidence.
     """
     try:
         logger.info(f"Processing document {document_id} from {file_path}")
@@ -138,7 +153,8 @@ async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
                         {
                             "text": line.content,
                             "bounding_box": format_bounding_box(line.polygon),
-                            "confidence": calculate_line_confidence(line, page.words) if page.words else 0.0
+                            "confidence": calculate_line_confidence(line, page.words) if page.words else 0.0,
+                            "is_handwritten": is_line_handwritten(line, page.words, result.styles)
                         } for line in page.lines
                     ],
                     "words": [

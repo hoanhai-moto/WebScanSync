@@ -9,9 +9,11 @@ from azure.core.credentials import AzureKeyCredential
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.ai.documentintelligence.models import AnalyzeResult
 from dotenv import load_dotenv
-from typing import Dict, Any
+from typing import Dict, Any, List
 import azure.ai.documentintelligence
 import numpy as np
+import datetime
+from openai import AzureOpenAI
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +27,14 @@ endpoint = os.getenv("AZURE_FORM_RECOGNIZER_ENDPOINT")
 key = os.getenv("AZURE_FORM_RECOGNIZER_KEY")
 if not endpoint or not key:
     raise ValueError("Azure endpoint or key not configured in environment variables")
+
+# Azure OpenAI Configuration
+azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+api_key = os.getenv("AZURE_OPENAI_KEY")
+deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "o4-mini")
+api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview")
+if not azure_endpoint or not api_key:
+    raise ValueError("Azure OpenAI endpoint or key not configured in environment variables")
 
 # Log SDK version
 logger.info(f"Using azure-ai-documentintelligence version: {azure.ai.documentintelligence.__version__}")
@@ -98,10 +108,112 @@ def is_line_handwritten(line, words, styles) -> bool:
     # Check if any word in the line is handwritten
     return any(is_word_handwritten(word, styles) for word in line_words)
 
+async def extract_structured_data(raw_text: str, document_type: str = "unknown") -> Dict[str, Any]:
+    """
+    Use Azure OpenAI to extract structured data from raw text according to our schema.
+    """
+    try:
+        logger.info("Extracting structured data using Azure OpenAI")        # Initialize Azure OpenAI client
+        client = AzureOpenAI(
+            api_version=api_version,
+            azure_endpoint=azure_endpoint,
+            api_key=api_key
+        )
+        
+        current_date = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        # Prepare the system message with instructions
+        system_message = """
+        Analyze the document text and extract the following information in JSON format:
+        
+        1. summary: A concise summary of the main points in the document
+        2. client_info: Information about the client or subject (name, contact details, ID numbers)
+        3. contract_info: Details about any contracts mentioned (type, number, date, parties)
+        4. advisory: Any recommendations or warnings based on the document content
+        5. document_type: The type of document (based on content analysis)
+        6. content_info: An array of key information points with their positions and labels
+        
+        Return only the JSON with these fields, no other text.
+        """
+        
+        # Prepare the user message with document content and type
+        user_message = f"""
+        Document Type: {document_type}
+        Document Content:
+        {raw_text} 
+        Extract the information according to the required structure.
+        """        # Call Azure OpenAI to extract structured data
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message}
+            ],
+            max_completion_tokens=10000,
+            model=deployment
+        )
+        
+        # Extract the response content
+        structured_content = response.choices[0].message.content
+        
+        try:
+            # Try to parse the response as JSON
+            structured_data = json.loads(structured_content)
+              # Ensure the response has the required structure with proper default values
+            required_fields = {
+                "summary": "Không có tóm tắt",
+                "client_info": "Không có thông tin khách hàng",
+                "contract_info": "Không có thông tin hợp đồng",
+                "advisory": "Không có khuyến nghị",
+                "document_type": document_type or "Không xác định",
+                "content_info": []
+            }
+            
+            for field, default_value in required_fields.items():
+                if field not in structured_data:
+                    structured_data[field] = default_value
+                elif field == "content_info" and not isinstance(structured_data[field], list):
+                    # Ensure content_info is always a list
+                    structured_data[field] = []
+                elif field != "content_info" and not structured_data[field]:
+                    # Replace empty strings with default values
+                    structured_data[field] = default_value
+                    
+            # Add uploaded_at if not present
+            if "uploaded_at" not in structured_data:
+                structured_data["uploaded_at"] = current_date
+                
+            return structured_data
+              except json.JSONDecodeError:
+            logger.error("Failed to decode JSON from Azure OpenAI response")
+            # Return a basic structure if JSON parsing fails
+            return {
+                "summary": "Không thể phân tích được nội dung JSON",
+                "client_info": "Không có thông tin khách hàng",
+                "contract_info": "Không có thông tin hợp đồng",
+                "advisory": "Không thể phân tích tài liệu do lỗi định dạng",
+                "document_type": document_type or "Không xác định",
+                "uploaded_at": current_date,
+                "content_info": []
+            }
+            
+    except Exception as e:
+        logger.error(f"Error in extract_structured_data: {str(e)}")
+        # Return a basic structure on error
+        current_date = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        return {
+            "summary": f"Lỗi khi phân tích: {str(e)}",
+            "client_info": "Không có thông tin khách hàng",
+            "contract_info": "Không có thông tin hợp đồng",
+            "advisory": "Không thể phân tích tài liệu do lỗi kỹ thuật",
+            "document_type": document_type or "Không xác định",
+            "uploaded_at": current_date,
+            "content_info": []
+        }
+
 async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
     """
-    Process uploaded document using Azure Document Intelligence.
-    Returns processed data with line and word handwritten flags and line confidence.
+    Process uploaded document using Azure Document Intelligence and Azure OpenAI.
+    Returns structured data suitable for document analysis and management.
     """
     try:
         logger.info(f"Processing document {document_id} from {file_path}")
@@ -128,60 +240,67 @@ async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
         result: AnalyzeResult = poller.result()
         logger.info(f"Completed analysis for {document_id}")
 
-        # Extract relevant information
-        processed_data = {
-            "document_id": document_id,
-            "status": "completed",
-            "raw_text": result.content if result.content else "No text extracted",
-            "styles": [
-                {
-                    "is_handwritten": style.is_handwritten,
-                    "index": idx,
-                    "spans": [
-                        {"offset": span.offset, "length": span.length}
-                        for span in style.spans
-                    ]
-                } for idx, style in enumerate(result.styles)
-            ] if result.styles else [],
-            "pages": [
-                {
-                    "page_number": page.page_number,
-                    "width": page.width,
-                    "height": page.height,
-                    "unit": page.unit,
-                    "lines": [
-                        {
-                            "text": line.content,
-                            "bounding_box": format_bounding_box(line.polygon),
-                            "confidence": calculate_line_confidence(line, page.words) if page.words else 0.0,
-                            "is_handwritten": is_line_handwritten(line, page.words, result.styles)
-                        } for line in page.lines
-                    ],
-                    "words": [
-                        {
-                            "text": word.content,
-                            "confidence": word.confidence,
-                            "bounding_box": format_bounding_box(word.polygon),
-                            "is_handwritten": is_word_handwritten(word, result.styles)
-                        } for word in page.words
-                    ] if page.words else []
-                } for page in result.pages
-            ] if result.pages else []
-        }
-
-        # Save processed data to JSON file
+        # Get raw text content for OpenAI processing
+        raw_text = result.content if result.content else "No text extracted"
+        
+        # Extract document type from filename or content analysis
+        # This is a simplified approach, you might want a more sophisticated method
+        document_type = os.path.splitext(os.path.basename(file_path))[0]
+        
+        # Extract structured data using Azure OpenAI
+        structured_data = await extract_structured_data(raw_text, document_type)
+        
+        # Enhance structured data with handwriting information
+        if result.pages and result.styles:
+            content_info = structured_data.get("content_info", [])
+            page_number = 1
+            
+            # Create mapping of content to handwriting status
+            for page in result.pages:
+                for line in page.lines:
+                    is_handwritten = is_line_handwritten(line, page.words, result.styles)
+                    line_text = line.content.strip()
+                    
+                    if line_text:
+                        # Try to find if this line matches any content in our structured data
+                        for item in content_info:
+                            if line_text in item.get("content", ""):
+                                # Update the item with handwriting information if not already present
+                                if "is_handwritten" not in item:
+                                    item["is_handwritten"] = is_handwritten
+                                    
+                                # Ensure position is set
+                                if "position" not in item or not item["position"]:
+                                    item["position"] = f"page {page_number}"
+                                    
+                page_number += 1
+        
+        # Add document_id to the structured data
+        structured_data["document_id"] = document_id
+        structured_data["status"] = "completed"
+        
+        # Add uploaded_at timestamp if not present
+        if "uploaded_at" not in structured_data:
+            structured_data["uploaded_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        # Save structured data to JSON file
         processed_file_path = os.path.join(PROCESSED_DATA_DIRECTORY, f"{document_id}.json")
         with open(processed_file_path, "w", encoding="utf-8") as f:
-            json.dump(processed_data, f, ensure_ascii=False, indent=4)
-        logger.info(f"Processed data saved to {processed_file_path}")
+            json.dump(structured_data, f, ensure_ascii=False, indent=4)
+        logger.info(f"Structured data saved to {processed_file_path}")
 
-        return processed_data
-
-    except Exception as e:
+        return structured_data    except Exception as e:
         logger.error(f"Error processing document {document_id}: {str(e)}")
         error_data = {
             "document_id": document_id,
             "status": "failed",
+            "summary": f"Error processing document: {str(e)}",
+            "client_info": "",
+            "contract_info": "",
+            "advisory": "Document analysis failed due to technical issues",
+            "document_type": os.path.splitext(os.path.basename(file_path))[0],
+            "uploaded_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "content_info": [],
             "error": str(e)
         }
         processed_file_path = os.path.join(PROCESSED_DATA_DIRECTORY, f"{document_id}.json")

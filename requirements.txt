@@ -2,3 +2,10 @@ fastapi
 uvicorn
 azure-ai-documentintelligence
 numpy
+python-dotenv
+openai
+datetime
+pytest
+pytest-asyncio
+httpx
+reportlab

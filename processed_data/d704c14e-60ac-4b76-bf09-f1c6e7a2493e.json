@@ -1,0 +1,96 @@
+{
+    "summary": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp đã giới thiệu mẫu dấu, mẫu chữ ký và thông tin cá nhân của cán bộ cùng giấy ủy quyền thực hiện, bao gồm bà Vũ Phước Nhung, ông Đoàn Nhựt Tân, ông Huỳnh Trung Kiên, và bổ nhiệm ông Phan Võ Phước Khánh làm Giám đốc chi nhánh từ ngày 17/01/2025. Các giấy chứng nhận đăng ký hoạt động kinh doanh liên quan đến chi nhánh cũng được ghi nhận.",
+    "client_info": {
+        "Tên tổ chức": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+        "Trụ sở": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+        "Đăng ký kinh doanh số": "0100112437",
+        "Nơi cấp giấy đăng ký kinh doanh": "Sở Kế hoạch và Đầu tư tỉnh Đồng Tháp",
+        "Người đại diện": {
+            "Họ và tên": "Phan Võ Phước Khánh",
+            "Thẻ căn cước công dân số": "093079006236",
+            "Chức danh": "Giám đốc Chi nhánh Đồng Tháp",
+            "Ngày cấp": "28/12/2022",
+            "Nơi cấp": "Cục Cảnh sát quản lý hành chính về trật tự xã hội"
+        },
+        "Quyết định bổ nhiệm": "Quyết định số 139/QĐ-VCB-TCNS ngày 14/01/2025.",
+        "Họ tên": "Không xác định",
+        "CCCD/CMND/Hộ chiếu": "Không xác định",
+        "Giới tính": "Không xác định",
+        "Ngày tháng năm sinh": "Không xác định",
+        "Địa chỉ cư trú": "Không xác định",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A",
+        "Nguyên quán": "Không xác định",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Không xác định"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Nguyễn Thanh Tùng",
+        "Ngày tháng ký": "17/01/2025",
+        "Số công chứng": "108/UQ-VCB-PC",
+        "Địa chỉ làm hồ sơ": "Văn phòng Công chứng Bách Việt, Đồng Tháp",
+        "Quyển lưu": "Quyển số 07-SCT/BS",
+        "Giá trị tài sản giao dịch": "Không xác định",
+        "contract info summarize": "Giấy ủy quyền số 108/UQ-VCB-PC, ông Nguyễn Thanh Tùng ủy quyền cho ông Phan Võ Phước Khánh thực hiện các hợp đồng liên quan đến hoạt động kinh doanh tại Vietcombank Chi nhánh Đồng Tháp.",
+        "Thông tin bên A": "Nguyễn Thanh Tùng - Chủ tịch Hội đồng quản trị, người đại diện theo pháp luật của Vietcombank.",
+        "Thông tin bên B": "Phan Võ Phước Khánh - Giám đốc Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp."
+    },
+    "advisory": "Xác nhận thông tin chữ ký mẫu và dấu của các phòng giao dịch để đảm bảo quy trình công việc được áp dụng đúng pháp luật. Rà soát thời hạn của các giấy ủy quyền và văn bản đăng ký kinh doanh, đề xuất cập nhật nếu cần.",
+    "document_type": "ỦY QUYỀN",
+    "uploaded_at": "2025-05-28T11:19:00Z",
+    "content_info": [
+        {
+            "position": 1,
+            "content": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+            "label": "Tên tổ chức",
+            "is_handwritten": true
+        },
+        {
+            "position": 2,
+            "content": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+            "label": "Trụ sở",
+            "is_handwritten": false
+        },
+        {
+            "position": 3,
+            "content": "0100112437",
+            "label": "Đăng ký kinh doanh số",
+            "is_handwritten": false
+        },
+        {
+            "position": 4,
+            "content": "Phan Võ Phước Khánh",
+            "label": "Người đại diện",
+            "is_handwritten": false
+        },
+        {
+            "position": 5,
+            "content": "Nguyễn Thanh Tùng",
+            "label": "Công chứng viên ký",
+            "is_handwritten": false
+        },
+        {
+            "position": 6,
+            "content": "17/01/2025",
+            "label": "Ngày ký",
+            "is_handwritten": false
+        },
+        {
+            "position": 7,
+            "content": "108/UQ-VCB-PC",
+            "label": "Số hợp đồng ủy quyền",
+            "is_handwritten": false
+        },
+        {
+            "position": 8,
+            "content": "Giám đốc Chi nhánh Đồng Tháp",
+            "label": "Chức danh người được ủy quyền",
+            "is_handwritten": false
+        }
+    ],
+    "document_id": "d704c14e-60ac-4b76-bf09-f1c6e7a2493e",
+    "status": "completed"
+}

@@ -3,12 +3,22 @@ from fastapi.responses import JSONResponse
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.documentintelligence.aio._client import DocumentIntelligenceClient
 from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
+from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 import uuid
 import os
 
 # Initialize FastAPI app
 app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Azure Document Intelligence credentials (replace with your actual endpoint and key)
 # Consider using environment variables for production
@@ -64,12 +74,17 @@ async def upload_document(file: UploadFile = File(...)):
 
         # Store processed data (in-memory for now)
         processed_documents[document_id] = {
+            "document_id": document_id,
             "document_type": document_type,
             "raw_data": raw_data,
+            "status": "completed",
+            "filename": file.filename,
+            # Add content_info field expected by frontend
+            "content_info": [],
             # Add other extracted data here later
         }
 
-        return JSONResponse(content={"document_id": document_id, "message": "Document uploaded and processing initiated"})
+        return JSONResponse(content={"document_id": document_id, "filename": file.filename, "message": "Document uploaded and processing initiated", "status": "completed"})
 
     except Exception as e:
         # Log the exception in a real application

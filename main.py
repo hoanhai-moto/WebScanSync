@@ -3,7 +3,7 @@ import shutil
 import uuid
 import json
 import logging
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.responses import JSONResponse
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.documentintelligence import DocumentIntelligenceClient
@@ -14,6 +14,7 @@ import azure.ai.documentintelligence
 import numpy as np
 import datetime
 from openai import AzureOpenAI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,6 +41,15 @@ if not azure_endpoint or not api_key:
 logger.info(f"Using azure-ai-documentintelligence version: {azure.ai.documentintelligence.__version__}")
 
 app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Directories for file storage
 UPLOAD_DIRECTORY = "./uploaded_documents"
@@ -112,6 +122,39 @@ async def extract_structured_data(raw_text: str, document_type: str = "unknown")
     """
     Use Azure OpenAI to extract structured data from raw text according to the specified schema.
     """
+    # Define default values for required fields at the beginning of the function
+    default_required_fields = {
+        "summary": "Không có tóm tắt",
+        "client_info": {
+            "Họ tên": "Không xác định",
+            "CCCD/CMND/Hộ chiếu": "Không xác định",
+            "Giới tính": "Không xác định",
+            "Ngày tháng năm sinh": "Không xác định",
+            "Địa chỉ cư trú": "Không xác định",
+            "Mã QR code trên CCCD": "N/A",
+            "Ngày cấp": "Không xác định",
+            "Nơi cấp": "Không xác định",
+            "Đơn vị cấp": "Không xác định",
+            "Hình ảnh": "N/A",
+            "Nguyên quán": "Không xác định",
+            "Mối quan hệ": "Không xác định",
+            "Dân tộc": "Không xác định"
+        },
+        "contract_info": {
+            "Công chứng viên ký": "Không xác định",
+            "Ngày tháng ký": "Không xác định",
+            "Số công chứng": "Không xác định",
+            "Địa chỉ làm hồ sơ": "Không xác định",
+            "Quyển lưu": "Không xác định",
+            "Giá trị tài sản giao dịch": 0,
+            "contract info summarize": "Không có thông tin hợp đồng",
+        },
+        "advisory": "Không có khuyến nghị",
+        "document_type": document_type or "Không xác định",
+        "uploaded_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "content_info": []
+    }
+
     try:
         logger.info("Extracting structured data using Azure OpenAI")
         # Initialize Azure OpenAI client
@@ -145,216 +188,132 @@ async def extract_structured_data(raw_text: str, document_type: str = "unknown")
             Thông tin bên A: Thông tin về bên A tham gia hợp đồng, bao gồm danh tính hoặc thông tin pháp lý của bên A .  Bên A có thể là một người, nhiều người, hoặc một tổ chức và Thông tin về bên thứ ba tham gia hợp đồng, nếu có. 
             Thông tin bên B: Thông tin về bên B tham gia hợp đồng, bao gồm danh tính hoặc thông tin pháp lý của bên B. Bên B có thể là một người, nhiều người, hoặc một tổ chức và Thông tin về bên thứ ba tham gia hợp đồng, nếu có. 
         4. advisory: Any recommendations or warnings based on the document content Trường này chứa các khuyến nghị hoặc khuyến cáo liên quan đến hồ sơ, được hệ thống tự động tạo ra dựa trên phân tích nội dung bằng AI. Các khuyến nghị có thể bao gồm cảnh báo về các vấn đề pháp lý (như thiếu chữ ký, thông tin không đầy đủ, hoặc tài liệu hết hạn) hoặc gợi ý các hành động cần thực hiện (như bổ sung giấy tờ, xác minh thông tin, hoặc gia hạn tài liệu). Tính năng "Đưa ra khuyến nghị, khuyến cáo" của dự án được sử dụng để tạo nội dung cho trường này, đảm bảo các vấn đề tiềm ẩn được phát hiện sớm. Trường này hỗ trợ nhân viên kiểm soát trong việc đánh giá chất lượng hồ sơ và đảm bảo tuân thủ các quy định pháp lý hoặc quy trình nội bộ. Nhân viên sử dụng cũng được hưởng lợi khi sử dụng thông tin từ trường này để đưa ra quyết định xử lý hồ sơ một cách hiệu quả. Super Admin có thể tham khảo các khuyến nghị để đánh giá hiệu quả quản lý hồ sơ của nhân viên hoặc điều chỉnh phân quyền nếu phát hiện các vấn đề lặp lại trong hệ thống.
-        5. document_type: The type of document (based on content analysis)Trường này xác định loại tài liệu của hồ sơ, dựa trên các danh mục được định nghĩa sẵn trong hệ thống phải giống với các loại sau không được tự ý chỉnh sửa tên các loại này: 
-        01. NHÀ ĐẤT – CHUNG CƯ
-        1. Mua bán nhà đất
-        2. Mua bán nhà đất (một phần)
-        3. Tặng cho nhà đất
-        4. Tặng cho nhà đất (một phần)
-        5. Thuê nhà
-        6. Mượn nhà
-        7. Ở nhờ
-        8. Chuyển nhượng đất
-        9. Chuyển nhượng đất (một phần)
-        10. Tặng cho đất
-        11. Tặng cho đất (một phần)
-        12. Thuê quyền sử dụng đất
-        13. Mua bán căn hộ chung cư
-        14. Mua bán căn hộ chung cư (một phần)
-        15. Tặng cho căn hộ chung cư
-        16. Tặng cho căn hộ chung cư (một phần)
-        17. Chuyển nhượng nhà đất
-        18. Chuyển nhượng nhà đất (một phần)
-        19. Tặng cho nhà đất
-        20. Tặng cho nhà đất (một phần)
-        21. Chuyển nhượng tài sản gắn liền với đất
-        22. Chuyển nhượng tài sản gắn liền với đất (một phần)
-        23. Tặng cho tài sản gắn liền với đất
-        24. Tặng cho tài sản gắn liền với đất (một phần)
-        25. Đặt cọc
+        5. document_type: You are a document classification expert. Your task is to classify the document type .
+            Select the MOST appropriate document type the return result must in one of these no adding no modify  if not you are fire
 
-        02. ỦY QUYỀN
-        26. Hợp đồng ủy quyền (mẫu chung)
-        27. Hợp đồng ủy quyền nhà đất
-        28. Hợp đồng ủy quyền căn hộ chưa sổ
-        29. Hợp đồng ủy quyền quyền sử dụng đất
-        30. Hợp đồng ủy quyền thừa kế
-        31. Hợp đồng ủy quyền thừa kế thụ ủy
-        32. Hợp đồng ủy quyền hộ gia đình
-        33. Hợp đồng ủy quyền hộ gia đình thụ ủy
-        34. Hợp đồng ủy quyền quản lý doanh nghiệp
-        35. Hợp đồng ủy quyền chứng khoán
-        36. Hợp đồng ủy quyền thụ ủy
-        37. Giấy ủy quyền (mẫu)
-        38. Giấy ủy quyền đăng bộ trước bạ
-        39. Giấy ủy quyền nộp thuế căn hộ
-        40. Giấy ủy quyền thành lập doanh nghiệp
-        41. Giấy ủy quyền thành lập hộ kinh doanh
-        42. Giấy ủy quyền thành lập Doanh Nghiệp nước ngoài
-        43. Giấy ủy quyền tham gia tố tụng
-        44. Giấy ủy quyền đưa con đi máy bay
-        45. Giấy ủy quyền đăng ký xe
-        46. Giấy ủy quyền điện nước
-        47. Giấy ủy quyền tiền bảo hiểm
-        48. Giấy ủy quyền tiền tử tuất
-        49. Giấy ủy quyền chứng thực (mẫu)
-
-        03. VĂN BẢN CHUYỂN NHƯỢNG
-        50. Văn bản chuyển nhượng
-        51. Văn bản chuyển nhượng officetel
-
-        04. DI SẢN THỪA KẾ
-        52. Thông báo niêm yết - Di sản thừa kế
-        53. Thông báo niêm yết - Di chúc
-        54. Phân chia di sản
-        55. Khai nhận di sản
-        56. Khai nhận di sản theo di chúc
-        57. Di chúc
-        58. Văn bản từ chối nhận di sản
-
-        05. XE
-        59. Ủy quyền xe ô tô
-        60. Ủy quyền xe ô tô - ủy quyền lại
-        61. Mua bán xe ô tô
-        62. Mua bán xe máy
-        63. Thuê xe
-        64. Mượn xe
-
-        06. DOANH NGHIỆP
-        65. Chuyển nhượng cổ phần doanh nghiệp
-        66. Tặng cho cổ phần doanh nghiệp
-        67. Chuyển nhượng góp vốn doanh nghiệp
-        68. Tặng cho góp vốn doanh nghiệp
-
-        07. TÀI SẢN VỢ CHỒNG
-        69. Cam kết tài sản riêng - chứng thực
-        70. Văn bản tài sản riêng
-        71. Văn bản phân chia tài sản
-        72. Văn bản phân chia tài sản sau ly hôn
-        73. Văn bản tài sản riêng - ly hôn
-        74. Văn bản nhập tài sản
-        75. Văn bản đưa tài sản vào kinh doanh
-        76. Văn bản tài sản riêng trước hôn nhân
-
-        08. SỬA ĐỔI, HỦY BỎ
-        77. Sửa đổi _ mẫu
-        78. Hủy bỏ _ mẫu
-        79. Chấm dứt _ mẫu
-
-        09. LỜI CHỨNG
-        80. Lời chứng _ mẫu
-        81. Lời chứng thế chấp _ mẫu
-        82. Lời chứng nhận ủy quyền _ mẫu
-        83. Lời chứng chứng thực _ mẫu
-        84. Lời chứng dịch thuật – song ngữ
-        85. Lời chứng dịch thuật _ mẫu
-
-        10. HỢP ĐỒNG GIAO DỊCH KHÁC
-        86. Tặng cho tài sản _ mẫu
-        87. Hợp đồng vay tiền
-        88. Hợp đồng Góp vốn
-        89. Hợp đồng Góp vốn – tiền _ mẫu
-        90. Hợp đồng Hợp tác kinh doanh
-
-        Bảo Lãnh
-        BL: Bảo lãnh
-        BL_GC: Giải chấp một phần (có soạn thảo hợp đồng sửa đổi bổ sung)
-        BL_GCK: Giải chấp không soạn văn bản
-
-        Cầm cố
-        CC_B: Cầm cố vay bổ sung
-        CC_C: Cầm cố
-        CC_GC: Giải phấp 1 phần (có soạn thảo hợp đồng)
-        CC_GCK: Giải chấp không soạn văn bản
-        CC_S: Sửa đổi, bổ sung HĐ cầm cố
-        CC_T: Thanh lý HĐ cầm cố
-
-        Chuyển đổi - Trao đổi
-        CD_C: HĐ chuyển đổi, trao đổi
-        CD_H: Hủy bỏ HĐ chuyển đổi, trao đổi
-        CD_S: Sửa đổi, bổ sung
-
-        Chuyển nhượng - Mua bán
-        CN_C: HĐ mua bán, chuyển nhượng
-        CN_DC: Đặt cọc
-        CN_H: Hủy bỏ mua bán, chuyển nhượng
-        CN_HD: Hủy bỏ HĐ đặt cọc
-        CN_HS: Hủy bỏ HĐ sửa đổi, bổ sung HĐ mua bán, chuyển nhượng
-        CN_S: Sửa đổi, bổ sung
-        CN_SC: Sửa đổi, bổ sung HĐ đặt cọc
-        CN_TDC: Thanh lý HĐ đặt cọc
-
-        Di chúc
-        DC_D: Di chúc
-        DC_H: Hủy bỏ Di chúc
-        DC_S: Sửa đổi, bổ sung
-
-        Góp vốn
-        GV_G: HĐ góp vốn
-        GV_H: Hủy bỏ HĐ góp vốn
-        GV_S: Sửa đổi, bổ sung HĐ góp vốn
-
-        Giao dịch khác
-        K_H: Hủy bỏ, thanh lý
-        K_K: HĐ, giao dịch khác
-        K_S: Sửa đổi, bổ sung
-
-        Tặng - cho
-        TC_H: Hủy bỏ tặng cho
-        TC_S: Sửa đổi, bổ sung
-        TC_TC: HĐ tặng cho
-
-        Thế chấp
-        THC_D3: Thế chấp đảm bảo nghĩa vụ bên thứ 3
-        THC_GC: Giải chấp một phần (có soạn thảo hợp đồng sửa đổi bổ sung)
-        THC_GCK: Giải chấp không soạn văn bản
-        THC_S: Sửa đổi, bổ sung HĐ thế chấp
-        THC_S3: Sửa đổi bổ sung HĐ thế chấp đảm bảo nghĩa vụ bên thứ 3
-        THC_TC: Thế chấp
-        THC_V: Thế chấp vay bổ sung
-        THC_V3: Thế chấp vay bổ sung đảm bảo nghĩa vụ bên thứ 3
-        THC_TL: Thanh lý HĐ thế chấp
-
-        Thừa kế
-        TK_DK: Văn bản thỏa thuận về hoàn tất thủ tục đăng ký thừa kế
-        TK_GCN: Văn bản thỏa thuận đại diện đứng tên trên giấy chứng nhận (GCN)
-        TK_H: Hủy bỏ
-        TK_KN: Khai nhận di sản thừa kế
-        TK_S: Sửa đổi, bổ sung
-        TK_TC: Từ chối nhận di sản
-        TK_TT: Thỏa thuận phân chia di sản thừa kế
-
-        Thuê mượn
-        TM_S: Sửa đổi, bổ sung
-        TM_TL: Thanh lý HĐ thuê mượn
-        TM_TM: HĐ thuê, mượn
-
-        Ủy quyền
-        UQ_CD: Thỏa thuận chấm dứt Ủy quyền
-        UQ_DPH: Đơn phương chấm dứt UQ
-        UQ_H: Hủy bỏ ủy quyền
-        UQ_S: Sửa đổi, bổ sung
-        UQ_UQ: Ủy quyền
-
-        Tài sản vợ chồng
-        VC_C: Chia tài sản vợ chồng
-        VC_CC: Chia tài sản chung
-        VC_CK: Cam kết tài sản
-        VC_CL: Chia tài sản sau ly hôn
-        VC_HC: Hủy bỏ chia tài sản chung
-        VC_HN: Hủy bỏ nhập tài sản riêng vào tài sản chung
-        VC_HT: Hủy bỏ thỏa thuận tài sản riêng
-        VC_KP: Khôi phục CĐTS chung
-        VC_N: Nhập tài sản riêng vào tài sản chung
-        VC_SC: Sửa đổi bổ sung chia tài sản chung
-        VC_TR: Thỏa thuận tài sản riêng
-
-        Vay
-        V_S: Sửa đổi bổ sung
-        V_TL: Thanh lý hợp đồng vay
-        V_TLTCH: Thanh lý hợp đồng vay và thế chấp tài sản
-        V_V: HĐ vay
-        V_VTCH: Hợp đồng vay và thế chấp tài sản
+            Mua bán nhà đất: Đây là hợp đồng chuyển giao quyền sở hữu toàn bộ nhà và đất từ người bán sang người mua để nhận tiền. Hợp đồng cần công chứng và đăng ký tại cơ quan đất đai, sau đó sổ đỏ hoặc sổ hồng được chuyển tên cho người mua.
+            Mua bán nhà đất (một phần): Đây là hợp đồng mua bán chỉ một phần nhà hoặc đất. Cần giấy phép tách thửa (nếu là đất), hợp đồng công chứng, và sổ đỏ/sổ hồng được cập nhật phần sở hữu mới.
+            Tặng cho nhà đất: Đây là việc chuyển giao quyền sở hữu toàn bộ nhà và đất miễn phí từ người tặng sang người nhận. Hợp đồng cần công chứng, và nếu người nhận là người thân (vợ, chồng, con), có thể miễn thuế thu nhập cá nhân.
+            Tặng cho nhà đất (một phần): Đây là việc tặng cho một phần nhà hoặc đất. Cần giấy phép tách thửa (nếu là đất) và hợp đồng công chứng, sổ đỏ/sổ hồng được cập nhật phần sở hữu mới.
+            Thuê nhà: Đây là hợp đồng cho phép người khác sử dụng nhà trong một thời gian nhất định để đổi lấy tiền thuê. Hợp đồng cần ghi rõ tiền thuê, thời gian, và thường cần công chứng để đảm bảo pháp lý.
+            Mượn nhà: Đây là thỏa thuận cho phép người khác sử dụng nhà miễn phí trong một thời gian nhất định. Thường có văn bản thỏa thuận, nhưng không bắt buộc công chứng.
+            Ở nhờ: Đây là việc ở tại nhà của người khác với sự đồng ý của chủ nhà, thường không có hợp đồng chính thức, không trả tiền, và mang tính thỏa thuận miệng.
+            Chuyển nhượng đất: Đây là hợp đồng chuyển quyền sử dụng đất từ người này sang người khác để nhận tiền. Hợp đồng cần công chứng, đăng ký tại cơ quan đất đai, và sổ đỏ được chuyển tên.
+            Chuyển nhượng đất (một phần): Đây là việc chuyển nhượng một phần quyền sử dụng đất. Cần giấy phép tách thửa, hợp đồng công chứng, và sổ đỏ được cập nhật.
+            Tặng cho đất: Đây là việc chuyển quyền sử dụng đất miễn phí từ người tặng sang người nhận. Hợp đồng cần công chứng, và nếu người nhận là người thân, có thể miễn thuế.
+            Tặng cho đất (một phần): Đây là việc tặng cho một phần quyền sử dụng đất. Cần giấy phép tách thửa, hợp đồng công chứng, và sổ đỏ được cập nhật.
+            Thuê quyền sử dụng đất: Đây là hợp đồng thuê đất để sử dụng trong một thời gian nhất định, đổi lấy tiền thuê. Hợp đồng cần ghi rõ điều khoản và có thể cần công chứng.
+            Mua bán căn hộ chung cư: Đây là hợp đồng chuyển quyền sở hữu căn hộ chung cư từ người bán sang người mua để nhận tiền. Hợp đồng cần công chứng và đăng ký, sổ hồng được chuyển tên.
+            Mua bán căn hộ chung cư (một phần): Đây là hợp đồng mua bán một phần quyền sở hữu căn hộ chung cư (hiếm gặp). Cần hợp đồng công chứng và thỏa thuận rõ ràng về phần sở hữu.
+            Tặng cho căn hộ chung cư: Đây là việc chuyển quyền sở hữu căn hộ chung cư miễn phí. Hợp đồng cần công chứng, và nếu người nhận là người thân, có thể miễn thuế.
+            Tặng cho căn hộ chung cư (một phần): Đây là việc tặng cho một phần quyền sở hữu căn hộ chung cư. Cần hợp đồng công chứng và xác định rõ phần sở hữu được tặng.
+            Chuyển nhượng nhà đất: Tương tự "Mua bán nhà đất", đây là việc chuyển quyền sở hữu nhà và đất để nhận tiền. Hợp đồng cần công chứng và đăng ký.
+            Chuyển nhượng nhà đất (một phần): Đây là việc chuyển nhượng một phần nhà và đất. Cần giấy phép tách thửa (nếu có đất) và hợp đồng công chứng.
+            Chuyển nhượng tài sản gắn liền với đất: Đây là hợp đồng chuyển quyền sở hữu tài sản trên đất (nhà, cây cối, công trình) để nhận tiền. Hợp đồng cần công chứng và đăng ký nếu có sổ.
+            Chuyển nhượng tài sản gắn liền với đất (một phần): Đây là việc chuyển nhượng một phần tài sản trên đất. Cần hợp đồng công chứng và xác định rõ phần chuyển nhượng.
+            Tặng cho tài sản gắn liền với đất: Đây là việc tặng miễn phí tài sản trên đất (như nhà, cây cối). Hợp đồng cần công chứng và đăng ký nếu có sổ.
+            Tặng cho tài sản gắn liền với đất (một phần): Đây là việc tặng một phần tài sản trên đất. Cần hợp đồng công chứng và xác định rõ phần tặng.
+            Đặt cọc: Đây là thỏa thuận đưa tiền trước để đảm bảo thực hiện giao dịch nhà đất trong tương lai (như mua bán). Hợp đồng cần ghi rõ số tiền và điều kiện.
+            Hợp đồng ủy quyền nhà đất: Đây là hợp đồng ủy quyền quản lý hoặc giao dịch nhà đất. Cần công chứng và có thể đăng ký nếu ảnh hưởng quyền sở hữu.
+            Hợp đồng ủy quyền căn hộ chưa sổ: Đây là hợp đồng ủy quyền giao dịch căn hộ chung cư chưa có sổ hồng. Cần công chứng và kèm giấy tờ mua bán.
+            Hợp đồng ủy quyền quyền sử dụng đất: Đây là hợp đồng ủy quyền quản lý hoặc sử dụng đất. Cần công chứng và đăng ký tại cơ quan đất đai.
+            Hợp đồng ủy quyền thừa kế: Đây là hợp đồng ủy quyền thực hiện thủ tục nhận tài sản thừa kế. Cần công chứng và kèm giấy tờ thừa kế.
+            Hợp đồng ủy quyền thừa kế thụ ủy: Đây là hợp đồng ủy quyền lại quyền thừa kế cho người khác. Cần công chứng và kèm giấy tờ thừa kế.
+            Hợp đồng ủy quyền hộ gia đình: Đây là hợp đồng ủy quyền cho một người đại diện hộ gia đình thực hiện giao dịch. Cần công chứng và kèm sổ hộ khẩu.
+            Hợp đồng ủy quyền hộ gia đình thụ ủy: Đây là hợp đồng ủy quyền cho một thành viên trong hộ gia đình (ủy quyền lại). Cần công chứng và xác nhận tư cách hộ.
+            Hợp đồng ủy quyền quản lý doanh nghiệp: Đây là hợp đồng ủy quyền quản lý, điều hành doanh nghiệp. Có thể cần công chứng và kèm giấy đăng ký kinh doanh.
+            Hợp đồng ủy quyền chứng khoán: Đây là hợp đồng ủy quyền giao dịch chứng khoán. Cần xác nhận bởi công ty chứng khoán, không nhất thiết công chứng.
+            Hợp đồng ủy quyền thụ ủy: Đây là hợp đồng ủy quyền lại cho bên thứ ba. Cần công chứng nếu liên quan tài sản lớn.
+            Giấy ủy quyền đăng bộ trước bạ: Đây là giấy ủy quyền nộp thuế trước bạ nhà đất. Cần công chứng và kèm giấy tờ nhà đất.
+            Giấy ủy quyền nộp thuế căn hộ: Đây là giấy ủy quyền nộp thuế căn hộ chung cư. Cần công chứng và kèm hợp đồng mua bán.
+            Giấy ủy quyền thành lập doanh nghiệp: Đây là giấy ủy quyền làm thủ tục thành lập công ty. Cần công chứng và kèm giấy tờ pháp lý.
+            Giấy ủy quyền thành lập hộ kinh doanh: Đây là giấy ủy quyền đăng ký hộ kinh doanh. Cần công chứng và xác nhận địa phương.
+            Giấy ủy quyền thành lập Doanh Nghiệp nước ngoài: Đây là giấy ủy quyền thành lập công ty nước ngoài tại Việt Nam. Cần công chứng và kèm giấy phép đầu tư.
+            Giấy ủy quyền tham gia tố tụng: Đây là giấy ủy quyền tham gia kiện tụng. Cần công chứng và nộp cho tòa án.
+            Giấy ủy quyền đưa con đi máy bay: Đây là giấy ủy quyền cho người khác đưa trẻ em đi máy bay. Cần công chứng và kèm giấy khai sinh.
+            Giấy ủy quyền đăng ký xe: Đây là giấy ủy quyền làm thủ tục đăng ký xe. Cần công chứng và kèm giấy tờ xe.
+            Giấy ủy quyền điện nước: Đây là giấy ủy quyền quản lý, nộp tiền điện nước. Thường không cần công chứng.
+            Giấy ủy quyền tiền bảo hiểm: Đây là giấy ủy quyền nhận tiền bảo hiểm. Cần công chứng và kèm hợp đồng bảo hiểm.
+            Giấy ủy quyền tiền tử tuất: Đây là giấy ủy quyền nhận tiền trợ cấp khi người thân qua đời. Cần công chứng và kèm giấy chứng tử.
+            Giấy ủy quyền chứng thực: Đây là giấy ủy quyền làm thủ tục xác nhận giấy tờ. Có thể cần công chứng tùy trường hợp.
+            Văn bản chuyển nhượng: Đây là văn bản chuyển quyền sở hữu tài sản (như nhà đất, căn hộ). Cần công chứng và đăng ký.
+            Văn bản chuyển nhượng officetel: Đây là văn bản chuyển quyền sở hữu officetel (căn hộ văn phòng). Cần công chứng và kèm sổ hồng.
+            Thông báo niêm yết - Di sản thừa kế: Đây là thông báo công khai về việc thừa kế để tìm người thừa kế. Niêm yết tại UBND, kèm giấy chứng tử hoặc di chúc.
+            Thông báo niêm yết - Di chúc: Đây là thông báo công khai về di chúc để xác nhận tính hợp pháp. Niêm yết tại UBND, kèm di chúc và giấy chứng tử.
+            Phân chia di sản: Đây là thỏa thuận giữa các bên thừa kế về cách chia tài sản. Cần công chứng và kèm giấy chứng tử.
+            Khai nhận di sản: Đây là văn bản xác nhận các bên thừa kế nhận tài sản. Cần công chứng và đăng ký nếu là nhà đất.
+            Khai nhận di sản theo di chúc: Đây là văn bản nhận tài sản thừa kế theo di chúc. Cần công chứng và đăng ký nếu là nhà đất.
+            Di chúc: Đây là văn bản ghi ý muốn của người lập về việc chia tài sản sau khi qua đời. Cần công chứng hoặc xác nhận.
+            Văn bản từ chối nhận di sản: Đây là văn bản từ chối nhận tài sản thừa kế. Cần công chứng trong 6 tháng từ khi mở thừa kế.
+            Ủy quyền xe ô tô: Đây là giấy ủy quyền sử dụng hoặc giao dịch xe ô tô. Cần công chứng và kèm giấy đăng ký xe.
+            Ủy quyền xe ô tô - ủy quyền lại: Đây là giấy ủy quyền lại quyền sử dụng xe ô tô cho người khác. Cần công chứng.
+            Mua bán xe ô tô: Đây là hợp đồng mua bán xe ô tô để nhận tiền. Cần công chứng và đăng ký đổi tên.
+            Mua bán xe máy: Đây là hợp đồng mua bán xe máy để nhận tiền. Cần công chứng và đăng ký đổi tên.
+            Thuê xe: Đây là hợp đồng cho thuê xe để sử dụng, ghi tiền thuê và thời gian thuê.
+            Mượn xe: Đây là thỏa thuận cho mượn xe miễn phí. Thường có thỏa thuận viết tay, không cần công chứng.
+            Chuyển nhượng cổ phần doanh nghiệp: Đây là việc bán cổ phần công ty. Cần hợp đồng và đăng ký với cơ quan kinh doanh.
+            Tặng cho cổ phần doanh nghiệp: Đây là việc cho cổ phần công ty miễn phí. Cần hợp đồng công chứng và đăng ký thay đổi.
+            Chuyển nhượng góp vốn doanh nghiệp: Đây là việc bán phần vốn góp trong công ty. Cần hợp đồng và đăng ký kinh doanh.
+            Tặng cho góp vốn doanh nghiệp: Đây là việc cho phần vốn góp miễn phí. Cần hợp đồng công chứng và đăng ký thay đổi.
+            Cam kết tài sản riêng - chứng thực: Đây là văn bản xác nhận tài sản là của riêng một người, không chung với vợ/chồng. Cần công chứng.
+            Văn bản tài sản riêng: Đây là văn bản xác nhận tài sản thuộc sở hữu riêng. Cần công chứng hoặc xác nhận.
+            Văn bản phân chia tài sản: Đây là thỏa thuận chia tài sản chung của vợ chồng. Cần công chứng.
+            Văn bản phân chia tài sản sau ly hôn: Đây là thỏa thuận chia tài sản chung sau ly hôn. Cần công chứng và kèm giấy ly hôn.
+            Văn bản tài sản riêng - ly hôn: Đây là văn bản xác nhận tài sản riêng khi ly hôn. Cần công chứng hoặc xác nhận.
+            Văn bản nhập tài sản: Đây là văn bản đưa tài sản riêng thành tài sản chung của vợ chồng. Cần công chứng.
+            Văn bản đưa tài sản vào kinh doanh: Đây là văn bản dùng tài sản để kinh doanh. Cần công chứng nếu là nhà đất.
+            Văn bản tài sản riêng trước hôn nhân: Đây là văn bản xác nhận tài sản riêng trước khi cưới. Cần công chứng hoặc xác nhận.
+            Lời chứng thế chấp: Đây là xác nhận của công chứng viên về hợp đồng thế chấp.
+            Lời chứng nhận ủy quyền: Đây là xác nhận của công chứng viên về hợp đồng ủy quyền.
+            Lời chứng chứng thực: Đây là xác nhận giấy tờ hoặc chữ ký là thật.
+            Lời chứng dịch thuật – song ngữ: Đây là xác nhận bản dịch hai ngôn ngữ đúng nội dung.
+            Lời chứng dịch thuật: Đây là xác nhận bản dịch đúng nội dung.
+            Hợp đồng vay tiền: Đây là thỏa thuận vay tiền, ghi số tiền, lãi suất, thời hạn.
+            Hợp đồng Góp vốn: Đây là thỏa thuận góp tiền/tài sản để kinh doanh.
+            Hợp đồng Góp vốn – tiền: Đây là thỏa thuận góp tiền để kinh doanh.
+            Hợp đồng Hợp tác kinh doanh: Đây là thỏa thuận cùng kinh doanh, ghi phần vốn và lợi nhuận.
+            BL: Bảo lãnh: Đây là cam kết của người khác trả nợ thay nếu bên vay không trả.
+            BL_GC: Giải chấp một phần: Đây là việc xóa một phần cam kết bảo lãnh, cần giấy bổ sung công chứng.
+            BL_GCK: Giải chấp không soạn văn bản: Đây là việc xóa toàn bộ cam kết bảo lãnh, cần xác nhận ngân hàng.
+            CC_B: Cầm cố vay bổ sung: Đây là việc đưa tài sản làm đảm bảo để vay thêm tiền.
+            CC_C: Cầm cố: Đây là việc đưa tài sản làm đảm bảo khoản vay.
+            CC_GC: Giải phấp một phần: Đây là việc xóa một phần tài sản cầm cố, cần giấy bổ sung công chứng.
+            CC_GCK: Giải chấp không soạn văn bản: Đây là việc xóa toàn bộ tài sản cầm cố, cần xác nhận ngân hàng.
+            CC_S: Sửa đổi, bổ sung HĐ cầm cố: Đây là việc thay đổi hợp đồng cầm cố, cần giấy bổ sung công chứng.
+            CC_T: Thanh lý HĐ cầm cố: Đây là việc kết thúc hợp đồng cầm cố, cần văn bản công chứng.
+            CD_C: HĐ chuyển đổi, trao đổi: Đây là việc đổi tài sản giữa hai bên, cần hợp đồng công chứng.
+            CD_H: Hủy bỏ HĐ chuyển đổi, trao đổi: Đây là việc hủy hợp đồng đổi tài sản, cần văn bản công chứng.
+            CN_C: HĐ mua bán, chuyển nhượng: Đây là việc bán tài sản để nhận tiền, cần hợp đồng công chứng.
+            CN_DC: Đặt cọc: Đây là việc đưa tiền trước để đảm bảo mua bán, cần hợp đồng công chứng.
+            CN_H: Hủy bỏ mua bán, chuyển nhượng: Đây là việc hủy hợp đồng mua bán, cần văn bản công chứng.
+            CN_HD: Hủy bỏ HĐ đặt cọc: Đây là việc hủy hợp đồng đặt cọc, cần văn bản công chứng hoặc thỏa thuận.
+            CN_TDC: Thanh lý HĐ đặt cọc: Đây là việc kết thúc hợp đồng đặt cọc, cần văn bản công chứng hoặc thỏa thuận.
+            DC_D: Di chúc: Đây là văn bản ghi ý muốn chia tài sản sau khi qua đời, cần công chứng hoặc xác nhận.
+            DC_H: Hủy bỏ Di chúc: Đây là việc hủy di chúc cũ, cần văn bản công chứng hoặc xác nhận.
+            GV_G: HĐ góp vốn: Đây là thỏa thuận góp tiền/tài sản để kinh doanh, ghi phần vốn và quyền lợi.
+            GV_H: Hủy bỏ HĐ góp vốn: Đây là việc hủy hợp đồng góp vốn, cần văn bản công chứng hoặc thỏa thuận.
+            TC_TC: HĐ tặng cho: Đây là việc cho tài sản miễn phí, cần công chứng nếu là nhà đất hoặc tài sản lớn.
+            THC_D3: Thế chấp đảm bảo nghĩa vụ bên thứ 3: Đây là việc đưa tài sản làm đảm bảo nợ cho người khác, cần hợp đồng công chứng.
+            THC_GC: Giải chấp một phần: Đây là việc xóa một phần tài sản thế chấp, cần giấy bổ sung công chứng.
+            THC_GCK: Giải chấp không soạn văn bản: Đây là việc xóa toàn bộ tài sản thế chấp, cần xác nhận ngân hàng.
+            THC_TC: Thế chấp: Đây là việc đưa tài sản làm đảm bảo khoản vay, cần hợp đồng công chứng và đăng ký.
+            THC_V: Thế chấp vay bổ sung: Đây là việc đưa tài sản làm đảm bảo để vay thêm tiền, cần hợp đồng công chứng.
+            THC_V3: Thế chấp vay bổ sung đảm bảo nghĩa vụ bên thứ 3: Đây là việc đưa tài sản làm đảm bảo vay thêm cho người khác, cần hợp đồng công chứng.
+            THC_TL: Thanh lý HĐ thế chấp: Đây là việc kết thúc hợp đồng thế chấp, cần văn bản công chứng xác nhận.
+            TK_DK: Văn bản thỏa thuận về hoàn tất thủ tục đăng ký thừa kế: Đây là thỏa thuận hoàn tất thủ tục nhận tài sản thừa kế, cần công chứng.
+            TK_GCN: Văn bản thỏa thuận đại diện đứng tên trên giấy chứng nhận (GCN): Đây là thỏa thuận cho một người đứng tên tài sản thừa kế, cần công chứng.
+            TK_KN: Khai nhận di sản thừa kế: Đây là việc xác nhận nhận tài sản thừa kế, cần công chứng.
+            TK_TC: Từ chối nhận di sản: Đây là việc từ chối nhận tài sản thừa kế, cần công chứng.
+            TK_TT: Thỏa thuận phân chia di sản thừa kế: Đây là thỏa thuận chia tài sản thừa kế, cần công chứng.
+            TM_TM: HĐ thuê, mượn: Đây là hợp đồng thuê hoặc mượn tài sản, ghi điều kiện, có thể công chứng.
+            VC_C: Chia tài sản vợ chồng: Đây là thỏa thuận chia tài sản chung của vợ chồng, cần công chứng.
+            VC_CC: Chia tài sản chung: Đây là việc chia tài sản chung, cần công chứng nếu là nhà đất.
+            VC_CK: Cam kết tài sản: Đây là cam kết về tài sản riêng hoặc chung, cần công chứng.
+            VC_CL: Chia tài sản sau ly hôn: Đây là thỏa thuận chia tài sản sau ly hôn, cần công chứng.
+            VC_N: Nhập tài sản riêng vào tài sản chung: Đây là việc đưa tài sản riêng thành chung, cần công chứng.
+            VC_TR: Thỏa thuận tài sản riêng: Đây là thỏa thuận về tài sản riêng, cần công chứng.
+            V_V: HĐ vay: Đây là hợp đồng vay tiền, ghi số tiền, lãi suất, thời hạn.
+            V_VTCH: Hợp đồng vay và thế chấp tài sản: Đây là hợp đồng vay tiền có tài sản thế chấp, cần công chứng và đăng ký.
 
 
         6. Thông tin Tài sản : 
@@ -482,7 +441,6 @@ label: Các nhãn "Tên người dùng", "Ngày sinh", "Địa chỉ", "Loại h
 }
 
         """
-        
         # Prepare the user message with document content and type
         user_message = f"""
         Document Type: {document_type}
@@ -495,72 +453,36 @@ label: Các nhãn "Tên người dùng", "Ngày sinh", "Địa chỉ", "Loại h
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": user_message}
             ],
-            max_completion_tokens=10000,
+            max_completion_tokens=12000,
             model=deployment
         )
         
         # Extract the response content
         structured_content = response.choices[0].message.content
         
+        # Log the first 100 characters of the response for debugging
+        logger.info(f"OpenAI response begins with: {structured_content[:100]}...")
+        
         try:
-            # Try to parse the response as JSON
-            structured_data = json.loads(structured_content)
-            
-            # Define default values for required fields
-            required_fields = {
-                "summary": "Không có tóm tắt",
-                "client_info": {
-                    "Họ tên": "Không xác định",
-                    "CCCD/CMND/Hộ chiếu": "Không xác định",
-                    "Giới tính": "Không xác định",
-                    "Ngày tháng năm sinh": "Không xác định",
-                    "Địa chỉ cư trú": "Không xác định",
-                    "Mã QR code trên CCCD": "N/A",
-                    "Ngày cấp": "Không xác định",
-                    "Nơi cấp": "Không xác định",
-                    "Đơn vị cấp": "Không xác định",
-                    "Hình ảnh": "N/A",
-                    "Nguyên quán": "Không xác định",
-                    "Mối quan hệ": "Không xác định",
-                    "Dân tộc": "Không xác định"
-                },
-                "contract_info": {
-                    "Công chứng viên ký": "Không xác định",
-                    "Ngày tháng ký": "Không xác định",
-                    "Số công chứng": "Không xác định",
-                    "Địa chỉ làm hồ sơ": "Không xác định",
-                    "Quyển lưu": "Không xác định",
-                    "Giá trị tài sản giao dịch": 0,
-                    "contract info summarize": "Không có thông tin hợp đồng",
-                },
-                "advisory": "Không có khuyến nghị",
-                "document_type": document_type or "Không xác định",
-                "Thông tin Tài sản": {
-                    "Thửa đất": "Không xác định",
-                    "Tờ bản đồ": "Không xác định",
-                    "Diện tích đất": "Không xác định",
-                    "Diện tích sử dụng chung": "N/A",
-                    "Diện tích sử dụng riêng": "N/A",
-                    "Mục đích sử dụng đất": "Không xác định",
-                    "Thời hạn sử dụng đất": "Không xác định",
-                    "Nguồn gốc đất": "Không xác định",
-                    "Số cấp Giấy Chứng Nhận": "Không xác định",
-                    "Số phát hành Giấy Chứng Nhận": "Không xác định",
-                    "Nơi cấp Giấy Chứng Nhận": "Không xác định",
-                    "Ngày cấp Giấy Chứng Nhận": "Không xác định",
-                    "Số nhà": "Không xác định",
-                    "Địa chỉ": "Không xác định",
-                    "Số căn hộ": "N/A",
-                    "Diện tích xây dựng": "Không xác định",
-                    "Loại nhà ở/công trình": "Không xác định",
-                    "Tổng diện tích xây dựng": "Không xác định"
-                },
-                "Thông tin khác": "Không xác định",
-                "content_info": []
-            }
+            # Try to extract JSON from the response
+            # First try direct JSON parsing
+            try:
+                structured_data = json.loads(structured_content)
+            except json.JSONDecodeError:
+                # If direct parsing fails, try to extract JSON from text
+                # Look for the first opening brace and last closing brace
+                logger.info("Attempting to extract JSON from text response")
+                start_idx = structured_content.find('{')
+                end_idx = structured_content.rfind('}') + 1
+                
+                if start_idx >= 0 and end_idx > start_idx:
+                    json_content = structured_content[start_idx:end_idx]
+                    structured_data = json.loads(json_content)
+                else:
+                    raise ValueError("Could not locate JSON content in the response")
             
             # Ensure all required fields are present with proper defaults
-            for field, default_value in required_fields.items():
+            for field, default_value in default_required_fields.items():
                 if field not in structured_data:
                     structured_data[field] = default_value
                 elif isinstance(default_value, dict):
@@ -581,18 +503,20 @@ label: Các nhãn "Tên người dùng", "Ngày sinh", "Địa chỉ", "Loại h
                 structured_data["uploaded_at"] = current_date
                 
             return structured_data
-        except json.JSONDecodeError:
-            logger.error("Failed to decode JSON from Azure OpenAI response")
+        except Exception as json_error:
+            logger.error(f"Failed to decode JSON from Azure OpenAI response: {str(json_error)}")
+            # Log more details about the response for debugging
+            logger.debug(f"Response content: {structured_content}")
+            
             return {
                 "summary": "Không thể phân tích được nội dung JSON",
-                "client_info": required_fields["client_info"],
-                "contract_info": required_fields["contract_info"],
+                "client_info": default_required_fields["client_info"],
+                "contract_info": default_required_fields["contract_info"],
                 "advisory": "Không thể phân tích tài liệu do lỗi định dạng",
                 "document_type": document_type or "Không xác định",
-                "Thông tin Tài sản": required_fields["Thông tin Tài sản"],
-                "Thông tin khác": "Không xác định",
                 "uploaded_at": current_date,
-                "content_info": []
+                "content_info": [],
+                "error_details": str(json_error)
             }
             
     except Exception as e:
@@ -600,55 +524,13 @@ label: Các nhãn "Tên người dùng", "Ngày sinh", "Địa chỉ", "Loại h
         current_date = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         return {
             "summary": f"Lỗi khi phân tích: {str(e)}",
-            "client_info": {
-                "Họ tên": "Không xác định",
-                "CCCD/CMND/Hộ chiếu": "Không xác định",
-                "Giới tính": "Không xác định",
-                "Ngày tháng năm sinh": "Không xác định",
-                "Địa chỉ cư trú": "Không xác định",
-                "Mã QR code trên CCCD": "N/A",
-                "Ngày cấp": "Không xác định",
-                "Nơi cấp": "Không xác định",
-                "Đơn vị cấp": "Không xác định",
-                "Hình ảnh": "N/A",
-                "Nguyên quán": "Không xác định",
-                "Mối quan hệ": "Không xác định",
-                "Dân tộc": "Không xác định"
-            },
-            "contract_info": {
-                "Công chứng viên ký": "Không xác định",
-                "Ngày tháng ký": "Không xác định",
-                "Số công chứng": "Không xác định",
-                "Địa chỉ làm hồ sơ": "Không xác định",
-                "Quyển lưu": "Không xác định",
-                "Giá trị tài sản giao dịch": 0,
-                "contract info summarize": "Không có thông tin hợp đồng",
-            },
+            "client_info": default_required_fields["client_info"],
+            "contract_info": default_required_fields["contract_info"],
             "advisory": "Không thể phân tích tài liệu do lỗi kỹ thuật",
             "document_type": document_type or "Không xác định",
-            "Thông tin Tài sản": {
-                "Thửa đất": "Không xác định",
-                "Tờ bản đồ": "Không xác định",
-                "Diện tích đất": "Không xác định",
-                "Diện tích sử dụng chung": "N/A",
-                "Diện tích sử dụng riêng": "N/A",
-                "Mục đích sử dụng đất": "Không xác định",
-                "Thời hạn sử dụng đất": "Không xác định",
-                "Nguồn gốc đất": "Không xác định",
-                "Số cấp Giấy Chứng Nhận": "Không xác định",
-                "Số phát hành Giấy Chứng Nhận": "Không xác định",
-                "Nơi cấp Giấy Chứng Nhận": "Không xác định",
-                "Ngày cấp Giấy Chứng Nhận": "Không xác định",
-                "Số nhà": "Không xác định",
-                "Địa chỉ": "Không xác định",
-                "Số căn hộ": "N/A",
-                "Diện tích xây dựng": "Không xác định",
-                "Loại nhà ở/công trình": "Không xác định",
-                "Tổng diện tích xây dựng": "Không xác định"
-            },
-            "Thông tin khác": "Không xác định",
             "uploaded_at": current_date,
-            "content_info": []
+            "content_info": [],
+            "error": str(e)
         }
 
 async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
@@ -763,27 +645,6 @@ async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
             },
             "advisory": "Document analysis failed due to technical issues",
             "document_type": os.path.splitext(os.path.basename(file_path))[0],
-            "Thông tin Tài sản": {
-                "Thử đất": "Không xác định",
-                "Tờ bản đồ": "Không xác định",
-                "Diện tích đất": "Không xác định",
-                "Diện tích sử dụng chung": "N/A",
-                "Diện tích sử dụng riêng": "N/A",
-                "Mục đích sử dụng đất": "Không xác định",
-                "Thời hạn sử dụng đất": "Không xác định",
-                "Nguồn gốc đất": "Không xác định",
-                "Số cấp Giấy Chứng Nhận": "Không xác định",
-                "Số phát hành Giấy Chứng Nhận": "Không xác định",
-                "Nơi cấp Giấy Chứng Nhận": "Không xác định",
-                "Ngày cấp Giấy Chứng Nhận": "Không xác định",
-                "Số nhà": "Không xác định",
-                "Địa chỉ": "Không xác định",
-                "Số căn hộ": "N/A",
-                "Diện tích xây dựng": "Không xác định",
-                "Loại nhà ở/công trình": "Không xác định",
-                "Tổng diện tích xây dựng": "Không xác định"
-            },
-            "Thông tin khác": "Không xác định",
             "uploaded_at": current_date,
             "content_info": [],
             "error": str(e)
@@ -826,16 +687,14 @@ async def upload_document(file: UploadFile = File(...)):
 @app.get("/processed/{document_type}/{document_id}")
 async def get_processed_data(document_type: str, document_id: str):
     """
-    Retrieve extracted data for a processed document.
+    Get the processed data for a document.
     """
-    processed_file_path = os.path.join(PROCESSED_DATA_DIRECTORY, f"{document_id}.json")
-
-    if not os.path.exists(processed_file_path):
-        logger.warning(f"Processed data not found for document ID {document_id}")
-        raise HTTPException(status_code=404, detail="Processed data not found")
-
     try:
-        with open(processed_file_path, "r", encoding="utf-8") as f:
+        processed_file = os.path.join(PROCESSED_DATA_DIRECTORY, f"{document_id}.json")
+        if not os.path.exists(processed_file):
+            raise HTTPException(status_code=404, detail=f"No processed data found for document ID {document_id}")
+            
+        with open(processed_file, 'r', encoding='utf-8') as f:
             processed_data = json.load(f)
         logger.info(f"Retrieved processed data for document ID {document_id}")
         return JSONResponse(content=processed_data)

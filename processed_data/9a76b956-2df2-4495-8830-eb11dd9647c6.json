@@ -1,0 +1,90 @@
+{
+    "summary": "Ngân hàng TMCP Ngoại thương Việt Nam chi nhánh Đồng Tháp gửi thông báo giới thiệu mẫu chữ ký, mẫu dấu của các nhân sự và quyết định điều động, bổ nhiệm cán bộ. Quyết định số 420/QĐ-ĐTH-HCNS ngày 26/12/2023 bổ nhiệm ông Huỳnh Trung Kiên giữ chức Phó Trưởng phòng Giao dịch Sa Đéc từ ngày 01/01/2024 và ông Phan Võ Phước Khánh giữ chức Giám đốc chi nhánh từ ngày 17/01/2025. Giấy ủy quyền số 108/UQ-VCB-PC ngày 17/01/2025 trao quyền cho các nhân sự chủ chốt thực hiện ký kết các hợp đồng liên quan. Thời hạn giữ chức vụ của cán bộ được xác định trong 4 năm.",
+    "client_info": {
+        "Tên tổ chức": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+        "Trụ sở": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+        "Đăng ký kinh doanh số": "0100112437-057",
+        "Nơi cấp giấy đăng ký kinh doanh": "Sở Kế hoạch và Đầu tư tỉnh Đồng Tháp",
+        "Người đại diện": "Phan Võ Phước Khánh",
+        "Chức danh": "Giám đốc Chi nhánh",
+        "Quyết định bổ nhiệm": "139/QĐ-VCB-TCNS ngày 14/01/2025",
+        "Họ tên": "Không xác định",
+        "CCCD/CMND/Hộ chiếu": "Không xác định",
+        "Giới tính": "Không xác định",
+        "Ngày tháng năm sinh": "Không xác định",
+        "Địa chỉ cư trú": "Không xác định",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A",
+        "Nguyên quán": "Không xác định",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Không xác định"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Nguyễn Thanh Tùng",
+        "Ngày tháng ký": "17/01/2025",
+        "Số công chứng": "108/UQ-VCB-PC",
+        "Địa chỉ làm hồ sơ": "Văn phòng Công chứng Bách Việt",
+        "Quyển lưu": "01 SCT/BS",
+        "Giá trị tài sản giao dịch": "Không xác định",
+        "contract info summarize": "Hợp đồng liên quan đến các giao dịch kinh doanh, thương mại, dân sự được ủy quyền cho các nhân sự tại chi nhánh thực hiện."
+    },
+    "advisory": "Các giấy tờ liên quan được công chứng đầy đủ, đảm bảo tính pháp lý. Cần theo dõi và thực hiện đúng thời hạn giữ chức vụ của các cán bộ theo quy định. Đảm bảo thẩm quyền và hạn mức ký kết hợp đồng phù hợp theo quy định Vietcombank.",
+    "document_type": {
+        "document_type": "UQ_UQ: Ủy quyền"
+    },
+    "uploaded_at": "2025-01-17T11:19:00Z",
+    "content_info": [
+        {
+            "position": 1,
+            "content": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+            "label": "Tên tổ chức",
+            "is_handwritten": true
+        },
+        {
+            "position": 1,
+            "content": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+            "label": "Trụ sở",
+            "is_handwritten": false
+        },
+        {
+            "position": 2,
+            "content": "Phan Võ Phước Khánh",
+            "label": "Người đại diện",
+            "is_handwritten": false
+        },
+        {
+            "position": 2,
+            "content": "Giám đốc Chi nhánh",
+            "label": "Chức danh",
+            "is_handwritten": false
+        },
+        {
+            "position": 3,
+            "content": "139/QĐ-VCB-TCNS ngày 14/01/2025",
+            "label": "Quyết định bổ nhiệm",
+            "is_handwritten": false
+        },
+        {
+            "position": 4,
+            "content": "108/UQ-VCB-PC",
+            "label": "Số công chứng",
+            "is_handwritten": false
+        },
+        {
+            "position": 5,
+            "content": "Văn phòng Công chứng Bách Việt",
+            "label": "Địa chỉ làm hồ sơ",
+            "is_handwritten": false
+        },
+        {
+            "position": 5,
+            "content": "Giấy ủy quyền",
+            "label": "Loại hợp đồng"
+        }
+    ],
+    "document_id": "9a76b956-2df2-4495-8830-eb11dd9647c6",
+    "status": "completed"
+}

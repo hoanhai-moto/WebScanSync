@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # You can use the 'mau 01 - HD uy quyen.pdf' file if it exists in uploaded_documents
     # For this test, let's assume you have a test file named 'test_document.pdf'
     # in the same directory as test.py, or provide a full path.
-    test_file_path = "doc/2508_0100112437-057-00252_07-05-2025_Vietcombank - CN Đồng Tháp - PTP. Huỳnh Trung Kiên.pdf" # Example using the file from environment_details
+    test_file_path = "uploaded_documents\c1a4186b-3c95-47f4-a94c-334af91051c4.pdf" # Example using the file from environment_details
 
     if not os.path.exists(test_file_path):
         print(f"Error: Test file not found at {test_file_path}")

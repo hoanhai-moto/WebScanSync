@@ -1,0 +1,34 @@
+{
+    "summary": "Lỗi khi phân tích: name 'dasdsada' is not defined",
+    "client_info": {
+        "Họ tên": "Không xác định",
+        "CCCD/CMND/Hộ chiếu": "Không xác định",
+        "Giới tính": "Không xác định",
+        "Ngày tháng năm sinh": "Không xác định",
+        "Địa chỉ cư trú": "Không xác định",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A",
+        "Nguyên quán": "Không xác định",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Không xác định"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Không xác định",
+        "Ngày tháng ký": "Không xác định",
+        "Số công chứng": "Không xác định",
+        "Địa chỉ làm hồ sơ": "Không xác định",
+        "Quyển lưu": "Không xác định",
+        "Giá trị tài sản giao dịch": 0,
+        "contract info summarize": "Không có thông tin hợp đồng"
+    },
+    "advisory": "Không thể phân tích tài liệu do lỗi kỹ thuật",
+    "document_type": "68cd8181-9b16-4e29-a92e-f930f21e6e4e",
+    "uploaded_at": "2025-05-31T06:30:00Z",
+    "content_info": [],
+    "error": "name 'dasdsada' is not defined",
+    "document_id": "68cd8181-9b16-4e29-a92e-f930f21e6e4e",
+    "status": "completed"
+}

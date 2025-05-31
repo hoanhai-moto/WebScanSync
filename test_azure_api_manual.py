@@ -219,7 +219,6 @@ async def test_azure_openai_with_existing_data():
         34. Hợp đồng ủy quyền quản lý doanh nghiệp
         35. Hợp đồng ủy quyền chứng khoán
         36. Hợp đồng ủy quyền thụ ủy
-        37. Giấy ủy quyền (mẫu)
         38. Giấy ủy quyền đăng bộ trước bạ
         39. Giấy ủy quyền nộp thuế căn hộ
         40. Giấy ủy quyền thành lập doanh nghiệp

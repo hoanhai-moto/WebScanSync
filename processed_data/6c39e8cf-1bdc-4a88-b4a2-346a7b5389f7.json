@@ -1,0 +1,98 @@
+{
+    "summary": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp, số 02/ĐTH-HCNS thông báo giới thiệu mẫu dấu, mẫu chữ ký của các cán bộ. Ông Huỳnh Trung Kiên được điều động giữ chức vụ Phó Trưởng phòng Giao dịch Sa Đéc từ ngày 01/01/2024 với mức lương 20.685.000 đồng/tháng. Ông Phan Võ Phước Khánh được bổ nhiệm Giám đốc Chi nhánh Đồng Tháp từ ngày 17/01/2025 với mức lương 42.000.000 đồng/tháng. Giấy chứng nhận uỷ quyền được cấp bởi Vietcombank cho các cán bộ, hiệu lực đến khi có thông báo thay thế.",
+    "client_info": {
+        "Tên tổ chức": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+        "Trụ sở": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+        "Đăng ký kinh doanh số": "0100112437-057",
+        "Người đại diện": "Phan Võ Phước Khánh",
+        "Chức danh": "Giám đốc Chi nhánh Đồng Tháp",
+        "Quyết định bổ nhiệm": "Ngày 14/01/2025, theo Quyết định số 139/QĐ-VCB-TCNS",
+        "Ngày cấp giấy phép": "17/06/2008",
+        "Nơi cấp giấy phép": "Phòng Đăng Ký Kinh Doanh - Sở Kế Hoạch và Đầu Tư Tỉnh Đồng Tháp",
+        "Họ tên": "Không xác định",
+        "CCCD/CMND/Hộ chiếu": "Không xác định",
+        "Giới tính": "Không xác định",
+        "Ngày tháng năm sinh": "Không xác định",
+        "Địa chỉ cư trú": "Không xác định",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A",
+        "Nguyên quán": "Không xác định",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Không xác định"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Thái Viết Phương",
+        "Ngày tháng ký": "10/01/2024",
+        "Số công chứng": "282",
+        "Địa chỉ làm hồ sơ": "Văn phòng công chứng tại Đồng Tháp",
+        "Quyển lưu": "01 SCT/BS",
+        "Giá trị tài sản giao dịch": 0,
+        "contract info summarize": "Hợp đồng uỷ quyền kinh doanh bao gồm ký kết các hợp đồng cho vay, thỏa thuận bảo lãnh, và các nghiệp vụ liên quan phát sinh tại Chi nhánh Đồng Tháp. Uỷ quyền hiệu lực đến khi có thông báo thay thế.",
+        "Thông tin bên A": {
+            "Tên": "Nguyễn Thanh Tùng",
+            "Chức danh": "Chủ tịch Hội đồng Quản trị",
+            "Căn cước công dân": "001074026372"
+        },
+        "Thông tin bên B": {
+            "Tên": "Phan Võ Phước Khánh",
+            "Chức danh": "Giám đốc Chi nhánh Đồng Tháp",
+            "Căn cước công dân": "093079006236"
+        }
+    },
+    "advisory": "Kiểm tra thời hạn hiệu lực của các giấy tờ uỷ quyền và mẫu dấu. Đảm bảo công việc uỷ quyền không vượt thẩm quyền và thực hiện đúng các quy định pháp luật.",
+    "document_type": "Giấy ủy quyền",
+    "uploaded_at": "2025-01-18T10:00:00Z",
+    "content_info": [
+        {
+            "position": 1,
+            "content": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+            "label": "Tên tổ chức",
+            "is_handwritten": true
+        },
+        {
+            "position": 2,
+            "content": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+            "label": "Địa chỉ trụ sở",
+            "is_handwritten": false
+        },
+        {
+            "position": 3,
+            "content": "Phan Võ Phước Khánh",
+            "label": "Tên người đại diện",
+            "is_handwritten": false
+        },
+        {
+            "position": 4,
+            "content": "Giám đốc Chi nhánh Đồng Tháp",
+            "label": "Chức danh người đại diện",
+            "is_handwritten": false
+        },
+        {
+            "position": 5,
+            "content": "42.000.000 đồng",
+            "label": "Mức lương",
+            "is_handwritten": true
+        },
+        {
+            "position": 6,
+            "content": "093079006236",
+            "label": "Căn cước công dân người đại diện",
+            "is_handwritten": false
+        },
+        {
+            "position": 7,
+            "content": "Uỷ quyền ký kết các hợp đồng tín dụng",
+            "label": "Nội dung uỷ quyền"
+        },
+        {
+            "position": 8,
+            "content": "Hiệu lực đến khi có thông báo thay thế",
+            "label": "Hiệu lực văn bản"
+        }
+    ],
+    "document_id": "6c39e8cf-1bdc-4a88-b4a2-346a7b5389f7",
+    "status": "completed"
+}

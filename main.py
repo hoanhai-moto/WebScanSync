@@ -15,7 +15,7 @@ import numpy as np
 import datetime
 from openai import AzureOpenAI
 from fastapi.middleware.cors import CORSMiddleware
-
+from ocr_formatter import format_ocr_data, save_formatted_data, load_and_format_ocr_file
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -563,14 +563,45 @@ async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
         result: AnalyzeResult = poller.result()
         logger.info(f"Completed analysis for {document_id}")
 
-        # Get raw text content for OpenAI processing
-        raw_text = result.content if result.content else "No text extracted"
+        # Convert AnalyzeResult to the format expected by format_ocr_data
+        raw_data = {
+            "document_id": document_id,
+            "status": "completed",
+            "raw_text": result.content if result.content else "No text extracted",
+            "pages": []
+        }
         
+        # Process pages
+        if result.pages:
+            for page in result.pages:
+                page_data = {
+                    "page_number": page.page_number,
+                    "width": page.width,
+                    "height": page.height,
+                    "unit": page.unit,
+                    "lines": []
+                }
+                
+                # Process lines
+                if hasattr(page, 'lines'):
+                    for line in page.lines:
+                        line_data = {
+                            "text": line.content,
+                            "bounding_box": format_bounding_box(line.polygon),
+                            "confidence": calculate_line_confidence(line, page.words) if page.words else 0.0,
+                            "is_handwritten": is_line_handwritten(line, page.words, result.styles)
+                        }
+                        page_data["lines"].append(line_data)
+                
+                raw_data["pages"].append(page_data)
+        
+        # Apply OCR formatter
+        results_formatted = format_ocr_data(raw_data)
         # Extract document type from filename or content analysis
         document_type = os.path.splitext(os.path.basename(file_path))[0]
         
         # Extract structured data using Azure OpenAI
-        structured_data = await extract_structured_data(raw_text, document_type)
+        structured_data = await extract_structured_data(raw_data["raw_text"], document_type)
         
         # Enhance structured data with handwriting information
         if result.pages and result.styles:

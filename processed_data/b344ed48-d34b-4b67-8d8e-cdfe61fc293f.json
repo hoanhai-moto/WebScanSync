@@ -1,0 +1,102 @@
+{
+    "summary": "Ngân hàng TMCP Ngoại thương Việt Nam Chi nhánh Đồng Tháp giới thiệu mẫu chữ ký mới của các cán bộ: ông Đoàn Nhựt Tân (Trưởng Phòng Giao dịch Sa Đéc), bà Vũ Phước Nhung (Phó Trưởng Phòng Giao dịch Sa Đéc), ông Huỳnh Trung Kiên (Phó Trưởng Phòng Giao dịch Sa Đéc), cùng mẫu dấu của Phòng Giao dịch Sa Đéc. Ngoài ra, ông Huỳnh Trung Kiên đã được bổ nhiệm làm Phó Trưởng Phòng Giao dịch Sa Đéc từ ngày 01/01/2024 với mức lương 19.700.000 đồng/tháng (lương đóng BHXH 20.685.000 đồng). Ông Phan Võ Phước Khánh được điều động làm Giám đốc Chi nhánh Đồng Tháp từ ngày 17/01/2025 với lương 42.000.000 đồng/tháng. Giấy ủy quyền được thiết lập để ông Phan Võ Phước Khánh đại diện ký các hợp đồng kinh doanh tại Chi nhánh Đồng Tháp.",
+    "client_info": {
+        "Tên tổ chức": "Ngân hàng TMCP Ngoại thương Việt Nam",
+        "Trụ sở": "198 Trần Quang Khải, Phường Lý Thái Tổ, Quận Hoàn Kiếm, Thành phố Hà Nội, Việt Nam",
+        "Đăng ký kinh doanh số": "0100112437",
+        "Nơi cấp giấy đăng ký kinh doanh": "Sở Kế hoạch và Đầu tư Thành phố Hà Nội",
+        "Người đại diện": "Nguyễn Thanh Tùng",
+        "Chức danh": "Chủ tịch Hội đồng Quản trị",
+        "Quyết định bổ nhiệm": "Số: 139/QĐ-VCB-TCNS ngày 14/01/2025",
+        "Họ tên": "Không xác định",
+        "CCCD/CMND/Hộ chiếu": "Không xác định",
+        "Giới tính": "Không xác định",
+        "Ngày tháng năm sinh": "Không xác định",
+        "Địa chỉ cư trú": "Không xác định",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A",
+        "Nguyên quán": "Không xác định",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Không xác định"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Thái Viết Phương",
+        "Ngày tháng ký": "26/12/2023",
+        "Số công chứng": "420/QĐ-ĐTH-HCNS",
+        "Địa chỉ làm hồ sơ": "Số 66, đường 30/4, Phường 1, TP. Cao Lãnh, Tỉnh Đồng Tháp",
+        "Quyển lưu": "01 SCT/BS",
+        "Giá trị tài sản giao dịch": 0,
+        "contract info summarize": "Giới thiệu mẫu chữ ký và dấu của các cán bộ thuộc Phòng Giao dịch Sa Đéc và Quyết định bổ nhiệm các cán bộ tại Ngân hàng TMCP Ngoại thương Việt Nam Chi nhánh Đồng Tháp.",
+        "Thông tin bên A": {
+            "Tên": "Phan Võ Phước Khánh",
+            "Chức danh": "Giám đốc Chi nhánh Đồng Tháp"
+        },
+        "Thông tin bên B": {
+            "Tên": "Huỳnh Trung Kiên",
+            "Chức danh": "Phó Trưởng Phòng Giao dịch Sa Đéc"
+        }
+    },
+    "advisory": "Kiểm tra mẫu chữ ký và dấu của các cán bộ được giới thiệu. Đảm bảo các quyết định bổ nhiệm và giấy ủy quyền được cấp hiệu lực hợp lý. Cần lưu ý thời hạn hiệu lực của các văn bản này để tránh sai sót.",
+    "document_type": "Giấy ủy quyền quyền sử dụng đất",
+    "uploaded_at": "2025-05-28T11:19:00Z",
+    "content_info": [
+        {
+            "position": 1,
+            "content": "Ngân hàng TMCP Ngoại thương Việt Nam",
+            "label": "Tên tổ chức",
+            "is_handwritten": false
+        },
+        {
+            "position": 1,
+            "content": "198 Trần Quang Khải, Phường Lý Thái Tổ, Quận Hoàn Kiếm, Thành phố Hà Nội, Việt Nam",
+            "label": "Trụ sở",
+            "is_handwritten": false
+        },
+        {
+            "position": 2,
+            "content": "Đoàn Nhựt Tân",
+            "label": "Tên cán bộ",
+            "is_handwritten": false
+        },
+        {
+            "position": 2,
+            "content": "Vũ Phước Nhung",
+            "label": "Tên cán bộ",
+            "is_handwritten": false
+        },
+        {
+            "position": 3,
+            "content": "Huỳnh Trung Kiên",
+            "label": "Tên cán bộ",
+            "is_handwritten": false
+        },
+        {
+            "position": 3,
+            "content": "Phan Võ Phước Khánh",
+            "label": "Giám đốc Chi nhánh Đồng Tháp",
+            "is_handwritten": false
+        },
+        {
+            "position": 4,
+            "content": "19.700.000 đồng",
+            "label": "Mức lương",
+            "is_handwritten": false
+        },
+        {
+            "position": 4,
+            "content": "26/12/2023",
+            "label": "Ngày ký",
+            "is_handwritten": false
+        },
+        {
+            "position": 5,
+            "content": "Phòng Giao dịch Sa Đéc",
+            "label": "Phòng giao dịch"
+        }
+    ],
+    "document_id": "b344ed48-d34b-4b67-8d8e-cdfe61fc293f",
+    "status": "completed"
+}

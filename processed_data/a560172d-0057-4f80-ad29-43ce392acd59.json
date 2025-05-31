@@ -1,0 +1,96 @@
+{
+    "summary": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp đã thực hiện nhiều quyết định bổ nhiệm và điều động cán bộ, bao gồm ông Huỳnh Trung Kiên giữ chức vụ Phó Trưởng phòng Giao dịch Sa Đéc từ ngày 01/01/2024 và ông Phan Võ Phước Khánh giữ chức vụ Giám đốc Chi nhánh Đồng Tháp từ ngày 17/01/2025. Các mẫu chữ ký và dấu của các cán bộ liên quan đã được giới thiệu và đăng ký tại Văn phòng Công chứng. Ngoài ra, các giấy chứng nhận đăng ký kinh doanh và địa điểm kinh doanh cũng được cập nhật, với thông tin chi tiết về người đứng đầu và địa chỉ liên lạc.",
+    "client_info": {
+        "Tên tổ chức": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+        "Trụ sở": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+        "Đăng ký kinh doanh số": "0100112437-057",
+        "Nơi cấp giấy đăng ký kinh doanh": "Sở Kế hoạch và Đầu tư Tỉnh Đồng Tháp",
+        "Người đại diện": "Phan Duy Phúc",
+        "Chức danh": "Giám đốc",
+        "Quyết định bổ nhiệm": "Quyết định số 420/QĐ-ĐTH-HCNS ngày 26/12/2023",
+        "Họ tên": "Không xác định",
+        "CCCD/CMND/Hộ chiếu": "Không xác định",
+        "Giới tính": "Không xác định",
+        "Ngày tháng năm sinh": "Không xác định",
+        "Địa chỉ cư trú": "Không xác định",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A",
+        "Nguyên quán": "Không xác định",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Không xác định"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Phan Phú Đông",
+        "Ngày tháng ký": "10/01/2024",
+        "Số công chứng": "282",
+        "Địa chỉ làm hồ sơ": "Văn phòng Công chứng Thái Viết Phương, Đồng Tháp",
+        "Quyển lưu": "01 SCT/BS",
+        "Giá trị tài sản giao dịch": "Không xác định",
+        "contract info summarize": "Giới thiệu mẫu chữ ký và mẫu dấu của các cán bộ thuộc Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp, cùng các quyết định bổ nhiệm và điều động cán bộ.",
+        "Thông tin bên A": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+        "Thông tin bên B": "Không xác định"
+    },
+    "advisory": "Hồ sơ đã được công chứng và đăng ký đầy đủ tại các cơ quan liên quan. Tuy nhiên, cần kiểm tra lại hiệu lực của các giấy ủy quyền và các quyết định bổ nhiệm để đảm bảo tính pháp lý trong các giao dịch tiếp theo.",
+    "document_type": "Giấy ủy quyền quản lý doanh nghiệp",
+    "uploaded_at": "2025-05-28T11:19:00Z",
+    "content_info": [
+        {
+            "position": 1,
+            "content": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+            "label": "Tên tổ chức",
+            "is_handwritten": true
+        },
+        {
+            "position": 1,
+            "content": "Số 66, đường 30/4, Phường 1, Thành phố Cao Lãnh, Tỉnh Đồng Tháp, Việt Nam",
+            "label": "Địa chỉ",
+            "is_handwritten": false
+        },
+        {
+            "position": 1,
+            "content": "Phan Duy Phúc",
+            "label": "Người đại diện",
+            "is_handwritten": false
+        },
+        {
+            "position": 1,
+            "content": "Giám đốc",
+            "label": "Chức danh"
+        },
+        {
+            "position": 7,
+            "content": "Quyết định số 420/QĐ-ĐTH-HCNS ngày 26/12/2023",
+            "label": "Quyết định bổ nhiệm",
+            "is_handwritten": false
+        },
+        {
+            "position": 5,
+            "content": "Huỳnh Trung Kiên",
+            "label": "Tên người liên quan",
+            "is_handwritten": false
+        },
+        {
+            "position": 13,
+            "content": "Phan Võ Phước Khánh",
+            "label": "Tên người liên quan",
+            "is_handwritten": false
+        },
+        {
+            "position": 15,
+            "content": "Giấy ủy quyền số 108/UQ-VCB-PC ngày 17/01/2025",
+            "label": "Giấy ủy quyền",
+            "is_handwritten": false
+        },
+        {
+            "position": 23,
+            "content": "0100112437-057",
+            "label": "Đăng ký kinh doanh số",
+            "is_handwritten": false
+        }
+    ],
+    "document_id": "a560172d-0057-4f80-ad29-43ce392acd59",
+    "status": "completed"
+}

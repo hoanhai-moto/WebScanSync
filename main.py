@@ -118,6 +118,120 @@ def is_line_handwritten(line, words, styles) -> bool:
     # Check if any word in the line is handwritten
     return any(is_word_handwritten(word, styles) for word in line_words)
 
+def extract_content_info(main_result: Dict[str, Any], results_formatted: Dict[str, Any], raw_text: str) -> List[Dict[str, Any]]:
+    """
+    Manually extract content_info by matching strings from main_result with text in results_formatted.
+    Returns a list of content_info entries with position and content fields.
+    
+    Args:
+        main_result: Structured JSON output from extract_structured_data.
+        results_formatted: Formatted OCR data from Azure Document Intelligence.
+        raw_text: Full raw text extracted from the document (unused in this implementation but kept for compatibility).
+    
+    Returns:
+        List of dictionaries, each containing 'position' (page number) and 'content' (matched text).
+    """
+    try:
+        logger.info("Manually extracting content_info by matching main_result with results_formatted")
+        
+        content_info = []
+        
+        # Collect all relevant text segments from main_result
+        text_segments = []
+        
+        # Extract from summary
+        if main_result.get("summary"):
+            text_segments.append(main_result["summary"])
+        
+        # Extract from client_info
+        if main_result.get("client_info"):
+            for key, value in main_result["client_info"].items():
+                if isinstance(value, str) and value not in ["Không xác định", "N/A"]:
+                    text_segments.append(value)
+        
+        # Extract from contract_info
+        if main_result.get("contract_info"):
+            for key, value in main_result["contract_info"].items():
+                if isinstance(value, str) and value not in ["Không xác định", "N/A"]:
+                    text_segments.append(value)
+                elif isinstance(value, int) and value != 0:
+                    text_segments.append(str(value))
+        
+        # Extract from advisory
+        if main_result.get("advisory") and main_result["advisory"] not in ["Không có khuyến nghị"]:
+            text_segments.append(main_result["advisory"])
+        
+        # Extract from document_type
+        if main_result.get("document_type") and main_result["document_type"] not in ["Không xác định"]:
+            text_segments.append(main_result["document_type"])
+        
+        # Extract from asset_info
+        if main_result.get("asset_info"):
+            for key, value in main_result["asset_info"].items():
+                if isinstance(value, str) and value not in ["Không xác định", "N/A"]:
+                    text_segments.append(value)
+        
+        # Extract from additional_info
+        if main_result.get("additional_info") and main_result["additional_info"] not in ["N/A"]:
+            text_segments.append(main_result["additional_info"])
+        
+        # Remove duplicates while preserving order
+        text_segments = list(dict.fromkeys(text_segments))
+        
+        # Search for each text segment in results_formatted
+        for segment in text_segments:
+            segment = segment.strip()
+            if not segment:
+                continue
+            
+            # Initialize default position
+            found = False
+            
+            # Iterate through pages in results_formatted
+            for page in results_formatted.get("pages", []):
+                page_number = page.get("page_number", 1)
+                
+                # Check paragraphs
+                for paragraph in page.get("paragraphs", []):
+                    paragraph_text = paragraph.get("text", "").strip()
+                    if segment in paragraph_text:
+                        content_info.append({
+                            "position": page_number,
+                            "content": segment
+                        })
+                        found = True
+                        break
+                
+                if found:
+                    break
+                
+                # Check lines if not found in paragraphs
+                for line in page.get("lines", []):
+                    line_text = line.get("text", "").strip()
+                    if segment == line_text:
+                        content_info.append({
+                            "position": page_number,
+                            "content": segment
+                        })
+                        found = True
+                        break
+                
+                if found:
+                    break
+            
+            if not found:
+                logger.warning(f"Text segment '{segment}' not found in results_formatted")
+        
+        # Log the extracted content_info
+        logger.info(f"Extracted {len(content_info)} content_info entries")
+        return content_info
+    
+    except Exception as e:
+        logger.error(f"Error in extract_content_info: {str(e)}")
+        return []
+
+
+
 async def extract_structured_data(raw_text: str, document_type: str = "unknown") -> Dict[str, Any]:
     """
     Use Azure OpenAI to extract structured data from raw text according to the specified schema.
@@ -453,10 +567,10 @@ label: Các nhãn "Tên người dùng", "Ngày sinh", "Địa chỉ", "Loại h
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": user_message}
             ],
-            max_completion_tokens=12000,
-            model=deployment
+            max_completion_tokens=15000,
+            model=deployment,
+            temperature=0.24
         )
-        
         # Extract the response content
         structured_content = response.choices[0].message.content
         
@@ -601,8 +715,8 @@ async def process_document(file_path: str, document_id: str) -> Dict[str, Any]:
         document_type = os.path.splitext(os.path.basename(file_path))[0]
         
         # Extract structured data using Azure OpenAI
-        structured_data = await extract_structured_data(raw_data["raw_text"], document_type)
-        
+        structured_data = await extract_structured_data(str(results_formatted), document_type)
+
         # Enhance structured data with handwriting information
         if result.pages and result.styles:
             content_info = structured_data.get("content_info", [])

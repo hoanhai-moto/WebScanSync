@@ -1,5 +1,7 @@
 {
-    "summary": "Lỗi khi phân tích: cannot access local variable 'required_fields' where it is not associated with a value",
+    "document_id": "ee021860-226d-494e-89df-4fe903fdd248",
+    "status": "failed",
+    "summary": "Error processing document: object list can't be used in 'await' expression",
     "client_info": {
         "Họ tên": "Không xác định",
         "CCCD/CMND/Hộ chiếu": "Không xác định",
@@ -24,11 +26,9 @@
         "Giá trị tài sản giao dịch": 0,
         "contract info summarize": "Không có thông tin hợp đồng"
     },
-    "advisory": "Không thể phân tích tài liệu do lỗi kỹ thuật",
-    "document_type": "b8671c7a-e236-494d-bd99-240168849e3f",
-    "uploaded_at": "2025-05-31T06:13:11Z",
+    "advisory": "Document analysis failed due to technical issues",
+    "document_type": "ee021860-226d-494e-89df-4fe903fdd248",
+    "uploaded_at": "2025-05-31T09:17:29Z",
     "content_info": [],
-    "error": "cannot access local variable 'required_fields' where it is not associated with a value",
-    "document_id": "b8671c7a-e236-494d-bd99-240168849e3f",
-    "status": "completed"
+    "error": "object list can't be used in 'await' expression"
 }

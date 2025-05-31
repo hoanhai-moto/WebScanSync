@@ -1,0 +1,99 @@
+{
+    "summary": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp đã thực hiện các quyết định bổ nhiệm và giới thiệu giấy ủy quyền cho các cán bộ mới, bao gồm ông Huỳnh Trung Kiên, ông Đoàn Nhựt Tân, bà Hồ Phương Uyên, và Phan Võ Phước Khánh. Thông tin cung cấp bao gồm mẫu chữ ký, nội dung ủy quyền, quyết định bổ nhiệm, và giấy chứng nhận đăng ký kinh doanh. Các tài liệu xác nhận trách nhiệm về điều động, chức danh, lương, thời gian bổ nhiệm, và hiệu lực giấy ủy quyền với các mốc ngày liên quan và thông tin cá nhân của các bên liên quan.",
+    "client_info": {
+        "Tên tổ chức": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+        "Trụ sở": "Số 66, đường 30/4, Phường 1, TP. Cao Lãnh, tỉnh Đồng Tháp, Việt Nam",
+        "Đăng ký kinh doanh số": "00252",
+        "Nơi cấp giấy đăng ký kinh doanh": "Sở Kế hoạch và Đầu tư Tỉnh Đồng Tháp",
+        "Người đại diện": "Phan Duy Phúc",
+        "Chức danh": "Giám đốc",
+        "Quyết định bổ nhiệm": "420/QĐ-ĐTH-HCNS",
+        "Họ tên": "Không xác định",
+        "CCCD/CMND/Hộ chiếu": "Không xác định",
+        "Giới tính": "Không xác định",
+        "Ngày tháng năm sinh": "Không xác định",
+        "Địa chỉ cư trú": "Không xác định",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A",
+        "Nguyên quán": "Không xác định",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Không xác định"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Thái Viết Phương",
+        "Ngày tháng ký": "10/01/2024",
+        "Số công chứng": "282",
+        "Địa chỉ làm hồ sơ": "Văn phòng công chứng Thái Viết Phương, Đồng Tháp",
+        "Quyển lưu": "1 SCT/BS",
+        "Giá trị tài sản giao dịch": 0,
+        "contract info summarize": "Giấy ủy quyền từ Chủ tịch Hội đồng quản trị Nguyễn Thanh Tùng cho các cán bộ chi nhánh Đồng Tháp gồm ông Phan Võ Phước Khánh, ông Đoàn Nhựt Tân, bà Hồ Phương Uyên, và ông Huỳnh Trung Kiên ký các hợp đồng kinh doanh, thương mại, dân sự theo các thỏa thuận và quy định của Vietcombank. Hiệu lực giấy ủy quyền từ ngày 17/01/2025.",
+        "Thông tin bên A": {
+            "Họ và tên": "Nguyễn Thanh Tùng",
+            "Chức danh": "Chủ tịch Hội đồng quản trị"
+        },
+        "Thông tin bên B": [
+            {
+                "Họ và tên": "Phan Võ Phước Khánh",
+                "Chức danh": "Giám đốc Chi nhánh Đồng Tháp"
+            },
+            {
+                "Họ và tên": "Đoàn Nhựt Tân",
+                "Chức danh": "Trưởng phòng Giao dịch Sa Đéc"
+            },
+            {
+                "Họ và tên": "Hồ Phương Uyên",
+                "Chức danh": "Phó Trưởng phòng Giao dịch Sa Đéc"
+            },
+            {
+                "Họ và tên": "Huỳnh Trung Kiên",
+                "Chức danh": "Phó Trưởng phòng Giao dịch Sa Đéc"
+            }
+        ]
+    },
+    "advisory": "Cần xem xét kỹ các nội dung trong giấy ủy quyền và xác nhận quyền hạn của người được ủy quyền. Đảm bảo hợp đồng ký kết đúng thẩm quyền và giới hạn quy định của Vietcombank. Kiểm tra tính hợp pháp của các thay đổi trong đăng ký kinh doanh.",
+    "document_type": "Giấy ủy quyền quyền sử dụng đất",
+    "uploaded_at": "2024-01-02T14:00:00Z",
+    "content_info": [
+        {
+            "position": 1,
+            "content": "Ngân hàng TMCP Ngoại thương Việt Nam - Chi nhánh Đồng Tháp",
+            "label": "Tên tổ chức",
+            "is_handwritten": true
+        },
+        {
+            "position": 3,
+            "content": "Phan Võ Phước Khánh",
+            "label": "Giám đốc Chi nhánh",
+            "is_handwritten": false
+        },
+        {
+            "position": 5,
+            "content": "Giấy ủy quyền từ Chủ tịch Hội đồng quản trị Nguyễn Thanh Tùng",
+            "label": "Loại tài liệu",
+            "is_handwritten": false
+        },
+        {
+            "position": 6,
+            "content": "Ngày cấp: 25/08/2021",
+            "label": "Ngày cấp",
+            "is_handwritten": false
+        },
+        {
+            "position": 10,
+            "content": "Giấy chứng nhận đăng ký kinh doanh số 00252",
+            "label": "Số giấy phép",
+            "is_handwritten": false
+        },
+        {
+            "position": 23,
+            "content": "Đăng ký lần đầu ngày 11 tháng 03 năm 2016 và thay đổi lần thứ 2 ngày 03 tháng 07 năm 2023",
+            "label": "Ngày sửa đổi/số lần sửa đổi giấy phép",
+            "is_handwritten": false
+        }
+    ],
+    "document_id": "4fd45919-1a75-4f10-8652-51727c72317e",
+    "status": "completed"
+}

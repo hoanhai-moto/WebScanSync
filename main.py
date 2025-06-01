@@ -45,7 +45,13 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend origin
+    allow_origins=["http://localhost:3000", 
+                  "http://14.225.210.30:8000", 
+                  "http://webscansync_demo-fe",
+                  "http://14.225.210.30",
+                  "https://14.225.210.30",
+                  "http://webscansync_demo-fe:3000",
+                  "*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

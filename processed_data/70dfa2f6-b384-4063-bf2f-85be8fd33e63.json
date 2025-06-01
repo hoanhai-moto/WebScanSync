@@ -1,0 +1,102 @@
+{
+    "summary": "Bà Nguyễn Thị Hoàng Điệp, sinh năm 1971, địa chỉ tại 24/2 Lam Sơn, Phường 02, Quận Tân Bình, TP.HCM, đã ký giấy ủy quyền cho ông Lê Xuân Lộc vào ngày 14/12/2018 để giải quyết vụ án tranh chấp hợp đồng chuyển nhượng quyền sở hữu nhà ở và quyền sử dụng đất tại Tòa án nhân dân quận Bình Tân. Tài sản liên quan là nhà và đất tại số 726 Kinh Dương Vương, phường An Lạc, quận Bình Tân, TP.HCM, diện tích đất 847.7m2, giá trị hợp đồng 18 tỷ đồng.",
+    "client_info": {
+        "Họ tên": "Nguyễn Thị Hoàng Điệp",
+        "CCCD/CMND/Hộ chiếu": "023 502 753",
+        "Giới tính": "Nữ",
+        "Ngày tháng năm sinh": "05/06/1971",
+        "Địa chỉ cư trú": "24/2 Lam Sơn, Phường 02, Quận Tân Bình, TP.HCM",
+        "Nguyên quán": "Quảng Ngãi",
+        "Mối quan hệ": "Không xác định",
+        "Dân tộc": "Kinh",
+        "Mã QR code trên CCCD": "N/A",
+        "Ngày cấp": "Không xác định",
+        "Nơi cấp": "Không xác định",
+        "Đơn vị cấp": "Không xác định",
+        "Hình ảnh": "N/A"
+    },
+    "contract_info": {
+        "Công chứng viên ký": "Nguyễn Thị Oanh",
+        "Ngày tháng ký": "14/12/2018",
+        "Số công chứng": "000665",
+        "Địa chỉ làm hồ sơ": "Văn phòng công chứng Văn Thị Mỹ Đức, 47E Nguyễn Thông, Phường 9, Quận 3, TP.HCM",
+        "Quyển lưu": "01 TP/CC-SCC/HĐGD",
+        "Giá trị tài sản giao dịch": 18000000000,
+        "contract info summarize": "Giấy ủy quyền được lập bởi bà Nguyễn Thị Hoàng Điệp, ủy quyền cho ông Lê Xuân Lộc để giải quyết vụ án tranh chấp hợp đồng chuyển nhượng quyền sở hữu nhà ở và quyền sử dụng đất tại Tòa án nhân dân quận Bình Tân.",
+        "Thông tin bên A": {
+            "Họ tên": "Nguyễn Thị Hoàng Điệp",
+            "CCCD/CMND": "023 502 753",
+            "Địa chỉ": "24/2 Lam Sơn, Phường 02, Quận Tân Bình, TP.HCM"
+        },
+        "Thông tin bên B": {
+            "Họ tên": "Lê Xuân Lộc",
+            "CCCD/CMND": "051 075 000 379",
+            "Địa chỉ": "239D Lò Siêu, Phường 11, Quận 11, TP.HCM"
+        }
+    },
+    "advisory": "Cần xác minh tính pháp lý của giấy chứng nhận quyền sở hữu nhà ở và quyền sử dụng đất tại số 726 Kinh Dương Vương, phường An Lạc, quận Bình Tân, TP.HCM. Đề nghị áp dụng biện pháp khẩn cấp tạm thời để bảo vệ tài sản trong thời gian giải quyết vụ án.",
+    "document_type": "Giấy ủy quyền thừa kế",
+    "uploaded_at": "2025-05-28T11:19:00Z",
+    "content_info": [
+        {
+            "position": 1,
+            "content": "Nguyễn Thị Hoàng Điệp",
+            "label": "Tên người dùng"
+        },
+        {
+            "position": 1,
+            "content": "05/06/1971",
+            "label": "Ngày sinh",
+            "is_handwritten": false
+        },
+        {
+            "position": 1,
+            "content": "24/2 Lam Sơn, Phường 02, Quận Tân Bình, TP.HCM",
+            "label": "Địa chỉ",
+            "is_handwritten": true
+        },
+        {
+            "position": 3,
+            "content": "Giấy ủy quyền",
+            "label": "Loại hợp đồng"
+        },
+        {
+            "position": 3,
+            "content": "000665",
+            "label": "Số công chứng",
+            "is_handwritten": true
+        },
+        {
+            "position": 3,
+            "content": "Nguyễn Thị Oanh",
+            "label": "Tên công chứng viên",
+            "is_handwritten": false
+        },
+        {
+            "position": 3,
+            "content": "14/12/2018",
+            "label": "Ngày ký",
+            "is_handwritten": false
+        },
+        {
+            "position": 13,
+            "content": "726 Kinh Dương Vương, phường An Lạc, quận Bình Tân, TP.HCM",
+            "label": "Địa chỉ tài sản",
+            "is_handwritten": false
+        },
+        {
+            "position": 13,
+            "content": "847.7m2",
+            "label": "Diện tích đất",
+            "is_handwritten": false
+        },
+        {
+            "position": 13,
+            "content": "18 tỷ đồng",
+            "label": "Giá trị hợp đồng",
+            "is_handwritten": false
+        }
+    ],
+    "document_id": "70dfa2f6-b384-4063-bf2f-85be8fd33e63",
+    "status": "completed"
+}

@@ -3,9 +3,13 @@ uvicorn
 azure-ai-documentintelligence
 numpy
 python-dotenv
-openai
+openai>=1.0.0
 datetime
 pytest
 pytest-asyncio
 httpx
 reportlab
+requests
+pydantic>=2.0.0
+gunicorn
+python-multipart
